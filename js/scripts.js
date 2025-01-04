@@ -268,22 +268,21 @@ async function loadMarkerData(markerFile) {
         const response = await fetch(`markers/${markerFile}`);
         const data = await response.json();
         
-        // No need to scale or transform coordinates - use them directly
         return {
-            camera: {
-                x: data.camera.x,
-                y: data.camera.y,
-                z: data.camera.z
-            },
+            camera: data.camera ? {
+                x: data.camera.x || "0",
+                y: data.camera.y || "0",
+                z: data.camera.z || "0"
+            } : null,
             target: data.target ? {
-                x: data.target.x,
-                y: data.target.y,
-                z: data.target.z
+                x: data.target.x || "0",
+                y: data.target.y || "0",
+                z: data.target.z || "0"
             } : null,
             subject: data.subject ? {
-                x: data.subject.x,
-                y: data.subject.y,
-                z: data.subject.z
+                x: data.subject.x || "0",
+                y: data.subject.y || "0",
+                z: data.subject.z || "0"
             } : null
         };
     } catch (error) {
@@ -573,32 +572,36 @@ function showInfoCard(pageName) {
     `;
     document.head.appendChild(scrollbarStyles);
 
-    // Create icon/logo
+    // Create icon/logo element
+    let iconElement = null;
     if (cardInfo.logo) {
         // Create logo image
-        const logo = document.createElement('img');
-        logo.src = cardInfo.logo;
-        logo.className = 'card-logo';
-        logo.style.cssText = `
+        iconElement = document.createElement('img');
+        iconElement.src = cardInfo.logo;
+        iconElement.className = 'card-logo';
+        iconElement.style.cssText = `
             width: ${isMobile ? '150px' : '200px'};
             height: auto;
             margin: 0 auto 20px;
             display: block;
             animation: floatIcon 3s ease-in-out infinite;
         `;
-        card.appendChild(logo);
     } else if (cardInfo.icon) {
         // Create icon for other cards
-        const icon = document.createElement('div');
-        icon.className = 'card-icon';
-        icon.textContent = cardInfo.icon;
-        icon.style.cssText = `
+        iconElement = document.createElement('div');
+        iconElement.className = 'card-icon';
+        iconElement.textContent = cardInfo.icon;
+        iconElement.style.cssText = `
             font-size: ${isMobile ? '48px' : '56px'};
             margin-bottom: 20px;
             text-align: center;
             animation: floatIcon 3s ease-in-out infinite;
         `;
-        card.appendChild(icon);
+    }
+
+    // Add icon/logo if created
+    if (iconElement) {
+        card.appendChild(iconElement);
     }
 
     // Create title
@@ -731,9 +734,11 @@ function showInfoCard(pageName) {
         card.appendChild(dotsContainer);
     }
 
-    // Assemble card
+    // Assemble card in correct order
     card.appendChild(closeBtn);
-    card.appendChild(icon);
+    if (iconElement) {
+        card.appendChild(iconElement);
+    }
     card.appendChild(title);
     card.appendChild(content);
 
