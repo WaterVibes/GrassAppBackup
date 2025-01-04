@@ -79,28 +79,31 @@ scene.fog = new THREE.Fog(fogColor, fogNear, fogFar);
 
 // Enhanced fog update function with reduced intensity
 function updateFog() {
+    // Skip fog updates if in free roam mode
+    if (isFreeRoamEnabled) return;
+
     const distanceFromCenter = Math.sqrt(
         camera.position.x * camera.position.x + 
         camera.position.z * camera.position.z
     );
     
     // Calculate height-based fog with reduced intensity
-    const heightFactor = Math.max(0, Math.min(1, camera.position.y / 2000));  // Increased from 1000
+    const heightFactor = Math.max(0, Math.min(1, camera.position.y / 2000));
     
     // Calculate distance-based fog with reduced intensity
-    const distanceFactor = Math.max(0, Math.min(1, distanceFromCenter / 2000));  // Increased from 1000
+    const distanceFactor = Math.max(0, Math.min(1, distanceFromCenter / 2000));
     
     // Combine both factors for dynamic fog
     const fogFactor = Math.max(heightFactor, distanceFactor);
     
     // Apply fog based on combined factors with increased distances
-    if (fogFactor > 0.5) {  // Increased threshold from 0.3
-        const intensity = (fogFactor - 0.5) / 0.5;  // Normalized to 0-1 range
-        scene.fog.near = 2000 - (intensity * 500);   // Increased base distance
-        scene.fog.far = 3000 - (intensity * 500);    // Increased base distance
+    if (fogFactor > 0.5) {
+        const intensity = (fogFactor - 0.5) / 0.5;
+        scene.fog.near = 2000 - (intensity * 500);
+        scene.fog.far = 3000 - (intensity * 500);
     } else {
-        scene.fog.near = 2500;  // Increased default fog distance
-        scene.fog.far = 3500;   // Increased default fog distance
+        scene.fog.near = 2500;
+        scene.fog.far = 3500;
     }
 }
 
@@ -181,6 +184,9 @@ function isMobileDevice() {
 
 // Function to constrain camera position
 function constrainCamera() {
+    // Skip constraints if in free roam mode
+    if (isFreeRoamEnabled) return;
+
     const maxRadius = 1200;  // Reduced from 1500 to keep within fog boundaries
     const minHeight = 200;   // Increased minimum height to prevent clipping
     const maxHeight = 1000;  // Increased maximum height for better overview
@@ -1294,10 +1300,15 @@ function enableFreeRoamCamera() {
 
 // Function to restore camera constraints
 function restoreCameraConstraints() {
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.screenSpacePanning = false;
+    controls.enablePan = true;
+    controls.panSpeed = isMobileDevice() ? 0.3 : 0.5;
+    controls.minDistance = isMobileDevice() ? 200 : 300;
+    controls.maxDistance = isMobileDevice() ? 1000 : 1200;
     controls.maxPolarAngle = Math.PI / 2.1;
     controls.minPolarAngle = Math.PI / 6;
-    controls.maxDistance = isMobileDevice() ? 1000 : 1200;
-    controls.minDistance = isMobileDevice() ? 200 : 300;
     
     // Restore original fog settings
     if (window.originalFog) {
