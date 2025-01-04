@@ -1501,6 +1501,10 @@ function updateCameraMovement() {
 
     const forward = new THREE.Vector3();
     camera.getWorldDirection(forward);
+    // Project forward vector onto horizontal plane
+    forward.y = 0;
+    forward.normalize();
+    
     const right = new THREE.Vector3();
     right.crossVectors(forward, camera.up);
 
