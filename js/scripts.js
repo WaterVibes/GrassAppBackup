@@ -821,7 +821,10 @@ function collapseNavPanel() {
     const style = document.createElement('style');
     style.textContent = `
         .nav-panel {
-            transition: transform 0.3s ease;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: none !important;
             position: fixed;
             right: 0;
             top: 50%;
@@ -841,13 +844,12 @@ function collapseNavPanel() {
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             touch-action: none;
-            visibility: hidden;
-            opacity: 0;
         }
         .nav-panel.visible {
-            visibility: visible;
-            opacity: 1;
-            transition: visibility 0s, opacity 0.5s ease;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transition: visibility 0s, opacity 0.5s ease !important;
         }
         .nav-panel.collapsed {
             transform: translate(calc(100% - 40px), -50%);
@@ -1117,21 +1119,28 @@ try {
             // Hide loading screen first
             if (loadingScreen) {
                 loadingScreen.classList.add('hidden');
-            }
-            
-            // Show nav panel and top logo after loading screen is hidden
-            setTimeout(() => {
-                const navPanel = document.querySelector('.nav-panel');
-                const topLogo = document.querySelector('.top-left-logo');
                 
-                if (navPanel) {
-                    navPanel.classList.remove('collapsed');
-                    navPanel.classList.add('visible');
-                }
-                if (topLogo) {
-                    topLogo.classList.add('visible');
-                }
-            }, 1000); // Increased delay to ensure loading screen has faded out
+                // Show nav panel and top logo only after loading screen starts fading
+                setTimeout(() => {
+                    const navPanel = document.querySelector('.nav-panel');
+                    const topLogo = document.querySelector('.top-left-logo');
+                    
+                    if (navPanel) {
+                        // Ensure panel is fully hidden before showing
+                        navPanel.style.visibility = 'hidden';
+                        navPanel.style.opacity = '0';
+                        navPanel.style.pointerEvents = 'none';
+                        
+                        // Small delay before showing to ensure loading screen is gone
+                        requestAnimationFrame(() => {
+                            navPanel.classList.add('visible');
+                        });
+                    }
+                    if (topLogo) {
+                        topLogo.classList.add('visible');
+                    }
+                }, 1000); // Increased delay to ensure loading screen has faded out
+            }
         },
         (progress) => {
             if (loadingProgress) {
