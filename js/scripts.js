@@ -1121,6 +1121,7 @@ try {
     // Animation Loop
     function animate() {
         requestAnimationFrame(animate);
+        updateCameraMovement();
         controls.update();
         TWEEN.update();
         
@@ -1446,5 +1447,115 @@ freeRoamButton.onclick = () => {
 };
 
 document.body.appendChild(freeRoamButton);
+
+// Add keyboard movement variables
+let moveSpeed = 5;
+let rotateSpeed = 0.02;
+let panSpeed = 0.02;
+let keysPressed = {};
+
+// Add keyboard controls
+document.addEventListener('keydown', (event) => {
+    keysPressed[event.key.toLowerCase()] = true;
+});
+
+document.addEventListener('keyup', (event) => {
+    keysPressed[event.key.toLowerCase()] = false;
+});
+
+// Update camera movement in animation loop
+function updateCameraMovement() {
+    if (!controls.enabled) return;
+
+    const forward = new THREE.Vector3();
+    camera.getWorldDirection(forward);
+    const right = new THREE.Vector3();
+    right.crossVectors(forward, camera.up);
+
+    // Forward/Backward (W/S)
+    if (keysPressed['w']) {
+        camera.position.addScaledVector(forward, moveSpeed);
+        controls.target.addScaledVector(forward, moveSpeed);
+    }
+    if (keysPressed['s']) {
+        camera.position.addScaledVector(forward, -moveSpeed);
+        controls.target.addScaledVector(forward, -moveSpeed);
+    }
+
+    // Up/Down (E/C)
+    if (keysPressed['e']) {
+        camera.position.y += moveSpeed;
+        controls.target.y += moveSpeed;
+    }
+    if (keysPressed['c']) {
+        camera.position.y -= moveSpeed;
+        controls.target.y -= moveSpeed;
+    }
+
+    // Rotate Left/Right (Q/R)
+    if (keysPressed['q']) {
+        const point = controls.target;
+        camera.position.sub(point);
+        camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), rotateSpeed);
+        camera.position.add(point);
+        camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), rotateSpeed);
+    }
+    if (keysPressed['r']) {
+        const point = controls.target;
+        camera.position.sub(point);
+        camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), -rotateSpeed);
+        camera.position.add(point);
+        camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), -rotateSpeed);
+    }
+
+    // Pan Up/Down (T/G)
+    if (keysPressed['t']) {
+        const up = new THREE.Vector3(0, 1, 0);
+        const offset = new THREE.Vector3();
+        offset.copy(camera.position).sub(controls.target);
+        offset.applyAxisAngle(right, -panSpeed);
+        camera.position.copy(controls.target).add(offset);
+        camera.up.applyAxisAngle(right, -panSpeed);
+    }
+    if (keysPressed['g']) {
+        const up = new THREE.Vector3(0, 1, 0);
+        const offset = new THREE.Vector3();
+        offset.copy(camera.position).sub(controls.target);
+        offset.applyAxisAngle(right, panSpeed);
+        camera.position.copy(controls.target).add(offset);
+        camera.up.applyAxisAngle(right, panSpeed);
+    }
+
+    // Update controls after movement
+    controls.update();
+}
+
+// Update the animate function to include camera movement
+function animate() {
+    requestAnimationFrame(animate);
+    updateCameraMovement();
+    controls.update();
+    TWEEN.update();
+    
+    // Apply constraints
+    constrainCamera();
+    updateFog();
+    
+    renderer.render(scene, camera);
+    labelRenderer.render(scene, camera);
+}
+
+// Add movement instructions to free roam button
+freeRoamButton.title = `
+Movement Controls:
+W - Forward
+S - Backward
+E - Up
+C - Down
+Q - Rotate Left
+R - Rotate Right
+T - Pan Up
+G - Pan Down
+`;
 
 // ... rest of existing code ... 
