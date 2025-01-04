@@ -793,18 +793,23 @@ function collapseNavPanel() {
             overflow: visible;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            touch-action: none;
         }
         .nav-panel.collapsed {
             transform: translate(calc(100% - 40px), -50%);
             pointer-events: none;
+            touch-action: none;
         }
-        .nav-panel.collapsed .nav-section {
+        .nav-panel.collapsed * {
             pointer-events: none;
+            touch-action: none;
         }
         .nav-panel.collapsed .nav-button {
-            pointer-events: none;
             opacity: 0.5;
             cursor: default;
+            visibility: visible;
+            pointer-events: none;
+            touch-action: none;
         }
         .nav-panel.collapsed .nav-panel-clickable {
             position: absolute;
@@ -814,10 +819,13 @@ function collapseNavPanel() {
             height: 100%;
             pointer-events: auto;
             cursor: pointer;
+            touch-action: manipulation;
+            z-index: 1001;
         }
         .nav-section {
             margin-bottom: 15px;
             pointer-events: auto;
+            touch-action: manipulation;
         }
         .nav-section:last-child {
             margin-bottom: 0;
@@ -829,6 +837,7 @@ function collapseNavPanel() {
             font-size: 16px;
             font-family: 'Poppins', sans-serif;
             text-transform: uppercase;
+            pointer-events: none;
         }
         .nav-button {
             background: transparent;
@@ -843,6 +852,7 @@ function collapseNavPanel() {
             transition: all 0.3s ease;
             font-family: 'Poppins', sans-serif;
             pointer-events: auto;
+            touch-action: manipulation;
         }
         .nav-button:hover {
             background: rgba(0, 255, 0, 0.1);
@@ -863,6 +873,7 @@ function collapseNavPanel() {
             .nav-panel.expanded {
                 transform: translate(0, -50%);
                 pointer-events: auto;
+                touch-action: manipulation;
             }
             .nav-section {
                 margin-bottom: 10px;
@@ -887,23 +898,38 @@ function collapseNavPanel() {
 
     // Add touch/click behavior for panel expansion
     let touchStartX = 0;
+    let touchStartY = 0;
     let touchStartTime = 0;
 
     clickableArea.addEventListener('touchstart', (e) => {
         touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
         touchStartTime = Date.now();
-    }, { passive: true });
+        e.stopPropagation();
+    }, { passive: false });
+
+    clickableArea.addEventListener('touchmove', (e) => {
+        if (navPanel.classList.contains('collapsed')) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }, { passive: false });
 
     clickableArea.addEventListener('touchend', (e) => {
         const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
         const touchEndTime = Date.now();
         const touchDuration = touchEndTime - touchStartTime;
-        const touchDistance = Math.abs(touchEndX - touchStartX);
+        const touchDistance = Math.sqrt(
+            Math.pow(touchEndX - touchStartX, 2) + 
+            Math.pow(touchEndY - touchStartY, 2)
+        );
 
         // If it's a quick tap (less than 200ms) and minimal movement (less than 10px)
         if (touchDuration < 200 && touchDistance < 10) {
             if (navPanel.classList.contains('collapsed')) {
                 navPanel.classList.remove('collapsed');
+                e.preventDefault();
                 e.stopPropagation();
             }
         }
@@ -913,6 +939,7 @@ function collapseNavPanel() {
     clickableArea.addEventListener('click', (e) => {
         if (navPanel.classList.contains('collapsed')) {
             navPanel.classList.remove('collapsed');
+            e.preventDefault();
             e.stopPropagation();
         }
     });
