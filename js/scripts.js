@@ -796,13 +796,28 @@ function collapseNavPanel() {
         }
         .nav-panel.collapsed {
             transform: translate(calc(100% - 40px), -50%);
+            pointer-events: none;
+        }
+        .nav-panel.collapsed .nav-section {
+            pointer-events: none;
         }
         .nav-panel.collapsed .nav-button {
             pointer-events: none;
             opacity: 0.5;
+            cursor: default;
+        }
+        .nav-panel.collapsed .nav-panel-clickable {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 100%;
+            pointer-events: auto;
+            cursor: pointer;
         }
         .nav-section {
             margin-bottom: 15px;
+            pointer-events: auto;
         }
         .nav-section:last-child {
             margin-bottom: 0;
@@ -827,6 +842,7 @@ function collapseNavPanel() {
             font-size: 13px;
             transition: all 0.3s ease;
             font-family: 'Poppins', sans-serif;
+            pointer-events: auto;
         }
         .nav-button:hover {
             background: rgba(0, 255, 0, 0.1);
@@ -841,8 +857,12 @@ function collapseNavPanel() {
             .nav-panel.collapsed {
                 transform: translate(calc(100% - 35px), -50%);
             }
+            .nav-panel.collapsed .nav-panel-clickable {
+                width: 35px;
+            }
             .nav-panel.expanded {
                 transform: translate(0, -50%);
+                pointer-events: auto;
             }
             .nav-section {
                 margin-bottom: 10px;
@@ -860,16 +880,21 @@ function collapseNavPanel() {
     `;
     document.head.appendChild(style);
 
+    // Add clickable area for collapsed panel
+    const clickableArea = document.createElement('div');
+    clickableArea.className = 'nav-panel-clickable';
+    navPanel.appendChild(clickableArea);
+
     // Add touch/click behavior for panel expansion
     let touchStartX = 0;
     let touchStartTime = 0;
 
-    navPanel.addEventListener('touchstart', (e) => {
+    clickableArea.addEventListener('touchstart', (e) => {
         touchStartX = e.touches[0].clientX;
         touchStartTime = Date.now();
     }, { passive: true });
 
-    navPanel.addEventListener('touchend', (e) => {
+    clickableArea.addEventListener('touchend', (e) => {
         const touchEndX = e.changedTouches[0].clientX;
         const touchEndTime = Date.now();
         const touchDuration = touchEndTime - touchStartTime;
@@ -885,7 +910,7 @@ function collapseNavPanel() {
     }, { passive: false });
 
     // Add click handler for desktop
-    navPanel.addEventListener('click', (e) => {
+    clickableArea.addEventListener('click', (e) => {
         if (navPanel.classList.contains('collapsed')) {
             navPanel.classList.remove('collapsed');
             e.stopPropagation();
