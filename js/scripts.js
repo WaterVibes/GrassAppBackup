@@ -444,7 +444,7 @@ const pageContent = {
             {
                 title: "Who We Are",
                 content: "GrassApp is more than a delivery service; we're a bridge connecting people to trusted, local dispensaries in a way that's safe, seamless, and culturally relevant.\nFounded in Baltimore, our mission is rooted in uplifting communities, providing access to cannabis responsibly, and celebrating the unique spirit of the people we serve.\nWhether you're a medical cannabis patient or a business partner, GrassApp delivers more than products—we deliver trust.",
-                icon: '🌿'
+                logo: 'GrassAppLogo.png'
             },
             {
                 title: "Our Commitment to the Community",
@@ -573,16 +573,33 @@ function showInfoCard(pageName) {
     `;
     document.head.appendChild(scrollbarStyles);
 
-    // Create icon
-    const icon = document.createElement('div');
-    icon.className = 'card-icon';
-    icon.textContent = cardInfo.icon;
-    icon.style.cssText = `
-        font-size: ${isMobile ? '48px' : '56px'};
-        margin-bottom: 20px;
-        text-align: center;
-        animation: floatIcon 3s ease-in-out infinite;
-    `;
+    // Create icon/logo
+    if (cardInfo.logo) {
+        // Create logo image
+        const logo = document.createElement('img');
+        logo.src = cardInfo.logo;
+        logo.className = 'card-logo';
+        logo.style.cssText = `
+            width: ${isMobile ? '150px' : '200px'};
+            height: auto;
+            margin: 0 auto 20px;
+            display: block;
+            animation: floatIcon 3s ease-in-out infinite;
+        `;
+        card.appendChild(logo);
+    } else if (cardInfo.icon) {
+        // Create icon for other cards
+        const icon = document.createElement('div');
+        icon.className = 'card-icon';
+        icon.textContent = cardInfo.icon;
+        icon.style.cssText = `
+            font-size: ${isMobile ? '48px' : '56px'};
+            margin-bottom: 20px;
+            text-align: center;
+            animation: floatIcon 3s ease-in-out infinite;
+        `;
+        card.appendChild(icon);
+    }
 
     // Create title
     const title = document.createElement('h2');
@@ -1097,12 +1114,12 @@ try {
                 loadingScreen.classList.add('hidden');
             }
             
-            // Show nav panel after a short delay
+            // Show nav panel after a short delay in expanded state
             setTimeout(() => {
                 const navPanel = document.querySelector('.nav-panel');
                 if (navPanel) {
                     navPanel.classList.add('visible');
-                    navPanel.classList.add('collapsed');
+                    // Start expanded instead of collapsed
                 }
             }, 500);
         },
