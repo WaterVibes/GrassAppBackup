@@ -350,29 +350,11 @@ async function createMarker(data, color = 0x00ff00) {
     try {
         const markerData = await loadMarkerData(data.markerFile);
         if (!markerData) return;
-
-        // Create camera position marker (red sphere)
-        if (markerData.camera) {
-            createDebugSphere(markerData.camera, 0xff0000, 5);
-        }
-
-        // Create target position marker (blue sphere)
-        if (markerData.target) {
-            createDebugSphere(markerData.target, 0x0000ff, 5);
-        }
-
-        // Create subject position marker (green sphere)
-        if (markerData.subject) {
-            createDebugSphere(markerData.subject, 0x00ff00, 5);
-        }
-
-        // Draw line from camera to target
-        if (markerData.camera && markerData.target) {
-            markerData.camera.targetPos = markerData.target;
-            createDebugSphere(markerData.camera, 0xff0000, 5);
-        }
+        
+        // Store marker data but don't create visible spheres
+        return markerData;
     } catch (error) {
-        console.error('Error creating debug marker:', error);
+        console.error('Error creating marker:', error);
     }
 }
 
@@ -391,7 +373,6 @@ async function createAllMarkers() {
 
 // Function to handle district selection with camera movement
 async function selectDistrictImpl(districtName) {
-    // Remove any existing info cards when selecting a district
     removeExistingInfoCard();
     
     console.log('Looking for district:', districtName);
@@ -402,25 +383,25 @@ async function selectDistrictImpl(districtName) {
     }
 
     try {
-        const cameraData = await loadMarkerData(district.cameraFile);
-        if (!cameraData) {
-            console.error('Camera data not found for district:', districtName);
+        const markerData = await loadMarkerData(district.markerFile);
+        if (!markerData || !markerData.camera || !markerData.subject) {
+            console.error('Marker data not found for district:', districtName);
             return;
         }
 
-        // Create camera position and target vectors
+        // Use camera position for camera and subject position for target
         const targetPos = new THREE.Vector3(
-            parseFloat(cameraData.target.x),
-            parseFloat(cameraData.target.y),
-            parseFloat(cameraData.target.z)
+            parseFloat(markerData.subject.x),
+            parseFloat(markerData.subject.y),
+            parseFloat(markerData.subject.z)
         );
         const cameraPos = new THREE.Vector3(
-            parseFloat(cameraData.camera.x),
-            parseFloat(cameraData.camera.y),
-            parseFloat(cameraData.camera.z)
+            parseFloat(markerData.camera.x),
+            parseFloat(markerData.camera.y),
+            parseFloat(markerData.camera.z)
         );
 
-        // Smooth transition for districts (same as pages)
+        // Smooth transition for districts
         new TWEEN.Tween(camera.position)
             .to(cameraPos, 1500)
             .easing(TWEEN.Easing.Cubic.InOut)
@@ -430,27 +411,6 @@ async function selectDistrictImpl(districtName) {
             .to(targetPos, 1500)
             .easing(TWEEN.Easing.Cubic.InOut)
             .start();
-
-        // Add a slight fade effect during transition
-        const overlay = document.createElement('div');
-        overlay.style.position = 'fixed';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100%';
-        overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
-        overlay.style.pointerEvents = 'none';
-        overlay.style.transition = 'opacity 1.5s';
-        overlay.style.opacity = '0';
-        document.body.appendChild(overlay);
-
-        // Fade in
-        setTimeout(() => { overlay.style.opacity = '1'; }, 0);
-        // Fade out and remove
-        setTimeout(() => {
-            overlay.style.opacity = '0';
-            setTimeout(() => overlay.remove(), 1500);
-        }, 750);
 
     } catch (error) {
         console.error('Error moving camera to district:', districtName, error);
@@ -1236,20 +1196,9 @@ function showError(message, details) {
     }
 }
 
-// Update showPageImpl to handle card timing better
+// Update showPageImpl to use subject position as target
 async function showPageImpl(pageName) {
-    // Remove any existing card immediately
     removeExistingInfoCard();
-
-    // Handle first selection and panel collapse
-    if (!hasFirstSelection) {
-        hasFirstSelection = true;
-        const navPanel = document.querySelector('.nav-panel');
-        if (navPanel) {
-            navPanel.classList.add('collapsed');
-            navPanel.classList.remove('expanded');
-        }
-    }
 
     console.log('Looking for page:', pageName);
     const page = pages.find(p => p.name === pageName);
@@ -1259,21 +1208,22 @@ async function showPageImpl(pageName) {
     }
 
     try {
-        const cameraData = await loadMarkerData(page.cameraFile);
-        if (!cameraData) {
-            console.error('Camera data not found for page:', pageName);
+        const markerData = await loadMarkerData(page.markerFile);
+        if (!markerData || !markerData.camera || !markerData.subject) {
+            console.error('Marker data not found for page:', pageName);
             return;
         }
 
+        // Use camera position for camera and subject position for target
         const targetPos = new THREE.Vector3(
-            parseFloat(cameraData.target.x),
-            parseFloat(cameraData.target.y),
-            parseFloat(cameraData.target.z)
+            parseFloat(markerData.subject.x),
+            parseFloat(markerData.subject.y),
+            parseFloat(markerData.subject.z)
         );
         const cameraPos = new THREE.Vector3(
-            parseFloat(cameraData.camera.x),
-            parseFloat(cameraData.camera.y),
-            parseFloat(cameraData.camera.z)
+            parseFloat(markerData.camera.x),
+            parseFloat(markerData.camera.y),
+            parseFloat(markerData.camera.z)
         );
 
         // Track camera movement completion
@@ -1303,15 +1253,6 @@ async function showPageImpl(pageName) {
                 }
             })
             .start();
-
-        // Handle first selection
-        if (!hasFirstSelection) {
-            hasFirstSelection = true;
-            const navPanel = document.querySelector('.nav-panel');
-            if (navPanel) {
-                navPanel.classList.add('collapsed');
-            }
-        }
 
     } catch (error) {
         console.error('Error moving camera to page:', pageName, error);
