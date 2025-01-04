@@ -181,11 +181,9 @@ function isMobileDevice() {
 
 // Function to constrain camera position
 function constrainCamera() {
-    if (isInFreeRoam) return; // Skip constraints in free roam mode
-
-    const maxRadius = 1200;
-    const minHeight = 200;
-    const maxHeight = 1000;
+    const maxRadius = 1200;  // Reduced from 1500 to keep within fog boundaries
+    const minHeight = 200;   // Increased minimum height to prevent clipping
+    const maxHeight = 1000;  // Increased maximum height for better overview
 
     const pos = camera.position.clone();
     const horizontalDist = Math.sqrt(pos.x * pos.x + pos.z * pos.z);
@@ -197,24 +195,24 @@ function constrainCamera() {
         pos.z = maxRadius * Math.sin(angle);
     }
     
-    // Constrain vertical movement
+    // Constrain vertical movement with smooth transition near boundaries
     if (pos.y < minHeight + 100) {
-        pos.y = minHeight + (pos.y - minHeight) * 0.5;
+        pos.y = minHeight + (pos.y - minHeight) * 0.5;  // Smooth transition near ground
     } else if (pos.y > maxHeight - 100) {
-        pos.y = maxHeight - (maxHeight - pos.y) * 0.5;
+        pos.y = maxHeight - (maxHeight - pos.y) * 0.5;  // Smooth transition near ceiling
     }
     
     // Additional constraints for diagonal movement
-    const minAngle = Math.PI / 6;
-    const maxAngle = Math.PI / 2.1;
+    const minAngle = Math.PI / 6;  // 30 degrees
+    const maxAngle = Math.PI / 2.1; // About 85 degrees
     
     const currentAngle = Math.atan2(pos.y, horizontalDist);
     if (currentAngle < minAngle) {
         const targetY = horizontalDist * Math.tan(minAngle);
-        pos.y = pos.y * 0.8 + targetY * 0.2;
+        pos.y = pos.y * 0.8 + targetY * 0.2;  // Smooth transition
     } else if (currentAngle > maxAngle) {
         const targetY = horizontalDist * Math.tan(maxAngle);
-        pos.y = pos.y * 0.8 + targetY * 0.2;
+        pos.y = pos.y * 0.8 + targetY * 0.2;  // Smooth transition
     }
     
     camera.position.copy(pos);
@@ -350,9 +348,9 @@ function createDebugSphere(position, color = 0xff0000, size = 10) {
 // Function to create a marker and label
 async function createMarker(data, color = 0x00ff00) {
     try {
-        const markerData = await loadMarkerData(data.markerFile);
-        if (!markerData) return;
-        
+    const markerData = await loadMarkerData(data.markerFile);
+    if (!markerData) return;
+
         // Store marker data but don't create visible spheres
         return markerData;
     } catch (error) {
@@ -1197,7 +1195,7 @@ function showError(message, details) {
     if (loadingScreen) {
         loadingScreen.classList.add('hidden');
     }
-}
+} 
 
 // Update showPageImpl to use subject position as target
 async function showPageImpl(pageName) {
@@ -1271,7 +1269,6 @@ let markerName = '';
 
 // Add free roam camera functions
 function enableFreeRoamCamera() {
-    isInFreeRoam = true;
     // Remove all constraints for free movement
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
@@ -1279,40 +1276,35 @@ function enableFreeRoamCamera() {
     controls.enablePan = true;
     controls.enableZoom = true;
     controls.enableRotate = true;
-    controls.maxPolarAngle = Math.PI; // Full vertical rotation
+    controls.maxPolarAngle = Math.PI; // Allow full vertical rotation
     controls.minPolarAngle = 0;
     controls.maxDistance = Infinity;
     controls.minDistance = 0;
-    controls.maxAzimuthAngle = Infinity;
-    controls.minAzimuthAngle = -Infinity;
+    
+    // Store original fog settings
+    window.originalFog = {
+        near: scene.fog.near,
+        far: scene.fog.far
+    };
+    
+    // Disable fog temporarily
+    scene.fog.near = 10000;
+    scene.fog.far = 12000;
 }
 
-// Add function to restore normal camera constraints
-function restoreNormalCamera() {
-    isInFreeRoam = false;
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.screenSpacePanning = false;
-    controls.enablePan = true;
-    controls.panSpeed = isMobileDevice() ? 0.3 : 0.5;
-    controls.minDistance = isMobileDevice() ? 50 : 100;
-    controls.maxDistance = isMobileDevice() ? 1000 : 1500;
+// Function to restore camera constraints
+function restoreCameraConstraints() {
     controls.maxPolarAngle = Math.PI / 2.1;
     controls.minPolarAngle = Math.PI / 6;
-}
-
-// Update free roam button
-freeRoamButton.onclick = () => {
-    if (!isInFreeRoam) {
-        enableFreeRoamCamera();
-        freeRoamButton.textContent = 'Exit Free Roam';
-        freeRoamButton.style.background = 'rgba(0, 255, 0, 0.2)';
-    } else {
-        restoreNormalCamera();
-        freeRoamButton.textContent = 'Toggle Free Roam';
-        freeRoamButton.style.background = 'rgba(0, 0, 0, 0.8)';
+    controls.maxDistance = isMobileDevice() ? 1000 : 1200;
+    controls.minDistance = isMobileDevice() ? 200 : 300;
+    
+    // Restore original fog settings
+    if (window.originalFog) {
+        scene.fog.near = window.originalFog.near;
+        scene.fog.far = window.originalFog.far;
     }
-};
+}
 
 // Function to create visible markers
 function createVisibleMarker(position, color) {
@@ -1348,12 +1340,6 @@ function saveMarkerPositions() {
         return;
     }
 
-    // Temporarily disable constraints if not in free roam
-    const wasInFreeRoam = isInFreeRoam;
-    if (!wasInFreeRoam) {
-        enableFreeRoamCamera();
-    }
-
     const markerData = {
         camera: {
             x: currentCameraMarker.position.x.toFixed(2),
@@ -1378,11 +1364,6 @@ function saveMarkerPositions() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-
-    // Restore constraints if they were enabled before
-    if (!wasInFreeRoam) {
-        restoreNormalCamera();
-    }
 
     console.log('Marker positions saved:', markerData);
 }
@@ -1483,13 +1464,15 @@ freeRoamButton.style.cssText = `
     z-index: 1000;
 `;
 
+let isFreeRoamEnabled = false;
 freeRoamButton.onclick = () => {
-    if (!isInFreeRoam) {
+    isFreeRoamEnabled = !isFreeRoamEnabled;
+    if (isFreeRoamEnabled) {
         enableFreeRoamCamera();
         freeRoamButton.textContent = 'Exit Free Roam';
         freeRoamButton.style.background = 'rgba(0, 255, 0, 0.2)';
     } else {
-        restoreNormalCamera();
+        restoreCameraConstraints();
         freeRoamButton.textContent = 'Toggle Free Roam';
         freeRoamButton.style.background = 'rgba(0, 0, 0, 0.8)';
     }
@@ -1531,6 +1514,16 @@ function updateCameraMovement() {
         controls.target.addScaledVector(forward, -moveSpeed);
     }
 
+    // Left/Right (A/D)
+    if (keysPressed['a']) {
+        camera.position.addScaledVector(right, -moveSpeed);
+        controls.target.addScaledVector(right, -moveSpeed);
+    }
+    if (keysPressed['d']) {
+        camera.position.addScaledVector(right, moveSpeed);
+        controls.target.addScaledVector(right, moveSpeed);
+    }
+
     // Up/Down (E/C)
     if (keysPressed['e']) {
         camera.position.y += moveSpeed;
@@ -1541,38 +1534,18 @@ function updateCameraMovement() {
         controls.target.y -= moveSpeed;
     }
 
-    // Rotate Left/Right (Q/R)
-    if (keysPressed['q']) {
-        const point = controls.target;
-        camera.position.sub(point);
-        camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), rotateSpeed);
-        camera.position.add(point);
-        camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), rotateSpeed);
-    }
-    if (keysPressed['r']) {
-        const point = controls.target;
-        camera.position.sub(point);
-        camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), -rotateSpeed);
-        camera.position.add(point);
-        camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), -rotateSpeed);
-    }
-
-    // Pan Up/Down (T/G)
+    // Tilt Up/Down (T/G)
     if (keysPressed['t']) {
-        const up = new THREE.Vector3(0, 1, 0);
         const offset = new THREE.Vector3();
         offset.copy(camera.position).sub(controls.target);
         offset.applyAxisAngle(right, -panSpeed);
         camera.position.copy(controls.target).add(offset);
-        camera.up.applyAxisAngle(right, -panSpeed);
     }
     if (keysPressed['g']) {
-        const up = new THREE.Vector3(0, 1, 0);
         const offset = new THREE.Vector3();
         offset.copy(camera.position).sub(controls.target);
         offset.applyAxisAngle(right, panSpeed);
         camera.position.copy(controls.target).add(offset);
-        camera.up.applyAxisAngle(right, panSpeed);
     }
 
     // Update controls after movement
@@ -1599,12 +1572,12 @@ freeRoamButton.title = `
 Movement Controls:
 W - Forward
 S - Backward
-E - Up
-C - Down
-Q - Rotate Left
-R - Rotate Right
-T - Pan Up
-G - Pan Down
+A - Left
+D - Right
+E - Move Up
+C - Move Down
+T - Tilt Up
+G - Tilt Down
 `;
 
 // ... rest of existing code ... 
