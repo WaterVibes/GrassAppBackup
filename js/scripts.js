@@ -24,14 +24,14 @@ camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight,
 // Set initial camera position from intro marker
 const introMarkerData = {
     camera: {
-        x: "0",
-        y: "1000",
-        z: "1000"
+        x: "196.97",
+        y: "156.96",
+        z: "630.37"
     },
     target: {
-        x: "0",
-        y: "0",
-        z: "0"
+        x: "191.44",
+        y: "154.81",
+        z: "622.32"
     }
 };
 
@@ -268,67 +268,92 @@ async function loadMarkerData(markerFile) {
         const response = await fetch(`markers/${markerFile}`);
         const data = await response.json();
         
-        // Scale factor to adjust marker positions
-        const scale = 0.5;  // Adjust this value to scale marker positions
-        
-        // Transform coordinates for camera positions
-        if (data.camera) {
-            const x = parseFloat(data.camera.x) * scale;
-            const y = parseFloat(data.camera.z) * scale;  // Use z for height
-            const z = parseFloat(data.camera.y) * scale;  // Use y for depth
-            data.camera.x = x.toString();
-            data.camera.y = y.toString();
-            data.camera.z = z.toString();
-        }
-        
-        // Transform coordinates for target positions
-        if (data.target) {
-            const x = parseFloat(data.target.x) * scale;
-            const y = parseFloat(data.target.z) * scale;  // Use z for height
-            const z = parseFloat(data.target.y) * scale;  // Use y for depth
-            data.target.x = x.toString();
-            data.target.y = y.toString();
-            data.target.z = z.toString();
-        }
-        
-        // Transform coordinates for subject positions
-        if (data.subject) {
-            const x = parseFloat(data.subject.x) * scale;
-            const y = parseFloat(data.subject.z) * scale;  // Use z for height
-            const z = parseFloat(data.subject.y) * scale;  // Use y for depth
-            data.subject.x = x.toString();
-            data.subject.y = y.toString();
-            data.subject.z = z.toString();
-        }
-        
-        return data;
+        // No need to scale or transform coordinates - use them directly
+        return {
+            camera: {
+                x: data.camera.x,
+                y: data.camera.y,
+                z: data.camera.z
+            },
+            target: data.target ? {
+                x: data.target.x,
+                y: data.target.y,
+                z: data.target.z
+            } : null,
+            subject: data.subject ? {
+                x: data.subject.x,
+                y: data.subject.y,
+                z: data.subject.z
+            } : null
+        };
     } catch (error) {
         console.error(`Error loading marker data from ${markerFile}:`, error);
         return null;
     }
 }
 
+// Function to create a debug sphere
+function createDebugSphere(position, color = 0xff0000, size = 10) {
+    const geometry = new THREE.SphereGeometry(size, 16, 16);
+    const material = new THREE.MeshBasicMaterial({ color: color });
+    const sphere = new THREE.Mesh(geometry, material);
+    sphere.position.set(
+        parseFloat(position.x),
+        parseFloat(position.y),
+        parseFloat(position.z)
+    );
+    scene.add(sphere);
+    
+    // Add a line from camera to target if both positions are provided
+    if (position.targetPos) {
+        const points = [
+            new THREE.Vector3(
+                parseFloat(position.x),
+                parseFloat(position.y),
+                parseFloat(position.z)
+            ),
+            new THREE.Vector3(
+                parseFloat(position.targetPos.x),
+                parseFloat(position.targetPos.y),
+                parseFloat(position.targetPos.z)
+            )
+        ];
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        const lineMaterial = new THREE.LineBasicMaterial({ color: color });
+        const line = new THREE.Line(lineGeometry, lineMaterial);
+        scene.add(line);
+    }
+}
+
 // Function to create a marker and label
 async function createMarker(data, color = 0x00ff00) {
-    const markerData = await loadMarkerData(data.markerFile);
-    if (!markerData) return;
+    try {
+        const markerData = await loadMarkerData(data.markerFile);
+        if (!markerData) return;
 
-    // Create marker geometry with smaller size
-    const markerGeometry = new THREE.SphereGeometry(5, 16, 16);
-    const markerMaterial = new THREE.MeshBasicMaterial({ 
-        color,
-        transparent: true,
-        opacity: 0.0  // Make markers invisible
-    });
-    const marker = new THREE.Mesh(markerGeometry, markerMaterial);
-    
-    // Set position from marker data
-    marker.position.set(
-        parseFloat(markerData.subject.x),
-        parseFloat(markerData.subject.y),
-        parseFloat(markerData.subject.z)
-    );
-    scene.add(marker);
+        // Create camera position marker (red sphere)
+        if (markerData.camera) {
+            createDebugSphere(markerData.camera, 0xff0000, 5);
+        }
+
+        // Create target position marker (blue sphere)
+        if (markerData.target) {
+            createDebugSphere(markerData.target, 0x0000ff, 5);
+        }
+
+        // Create subject position marker (green sphere)
+        if (markerData.subject) {
+            createDebugSphere(markerData.subject, 0x00ff00, 5);
+        }
+
+        // Draw line from camera to target
+        if (markerData.camera && markerData.target) {
+            markerData.camera.targetPos = markerData.target;
+            createDebugSphere(markerData.camera, 0xff0000, 5);
+        }
+    } catch (error) {
+        console.error('Error creating debug marker:', error);
+    }
 }
 
 // Function to create all markers
@@ -805,11 +830,16 @@ function collapseNavPanel() {
             touch-action: none;
         }
         .nav-panel.collapsed .nav-button {
-            opacity: 0.5;
-            cursor: default;
-            visibility: visible;
+            opacity: 0;
+            visibility: hidden;
             pointer-events: none;
             touch-action: none;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .nav-panel.collapsed .nav-section h3 {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
         .nav-panel.collapsed .nav-panel-clickable {
             position: absolute;
@@ -821,6 +851,8 @@ function collapseNavPanel() {
             cursor: pointer;
             touch-action: manipulation;
             z-index: 1001;
+            background: rgba(0, 0, 0, 0.8);
+            border-left: 1px solid #00ff00;
         }
         .nav-section {
             margin-bottom: 15px;
@@ -866,6 +898,10 @@ function collapseNavPanel() {
             }
             .nav-panel.collapsed {
                 transform: translate(calc(100% - 35px), -50%);
+            }
+            .nav-panel.collapsed .nav-button,
+            .nav-panel.collapsed .nav-section h3 {
+                display: none;
             }
             .nav-panel.collapsed .nav-panel-clickable {
                 width: 35px;
