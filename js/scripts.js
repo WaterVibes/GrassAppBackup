@@ -444,7 +444,7 @@ const pageContent = {
             {
                 title: "Who We Are",
                 content: "GrassApp is more than a delivery service; we're a bridge connecting people to trusted, local dispensaries in a way that's safe, seamless, and culturally relevant.\nFounded in Baltimore, our mission is rooted in uplifting communities, providing access to cannabis responsibly, and celebrating the unique spirit of the people we serve.\nWhether you're a medical cannabis patient or a business partner, GrassApp delivers more than products—we deliver trust.",
-                logo: 'GrassAppLogo.png'
+                icon: '🌿'
             },
             {
                 title: "Our Commitment to the Community",
@@ -1114,12 +1114,16 @@ try {
                 loadingScreen.classList.add('hidden');
             }
             
-            // Show nav panel after a short delay in expanded state
+            // Show nav panel and top logo after a short delay
             setTimeout(() => {
                 const navPanel = document.querySelector('.nav-panel');
+                const topLogo = document.querySelector('.top-left-logo');
+                
                 if (navPanel) {
                     navPanel.classList.add('visible');
-                    // Start expanded instead of collapsed
+                }
+                if (topLogo) {
+                    topLogo.classList.add('visible');
                 }
             }, 500);
         },
