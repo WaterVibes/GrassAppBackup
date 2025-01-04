@@ -1,0 +1,9 @@
+# Set MIME types for Draco decoder files
+AddType application/wasm .wasm
+AddType application/javascript .js
+AddType text/javascript .js
+
+# Enable CORS
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET, OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type" 

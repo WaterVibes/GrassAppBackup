@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <<<<<<< HEAD
+<<<<<<< HEAD
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Interactive 3D map of Baltimore City showcasing GrassApp's cannabis delivery service">
     <meta name="theme-color" content="#000000">
@@ -45,6 +46,8 @@
             "three/examples/jsm/loaders/GLTFLoader": "https://unpkg.com/three@0.157.0/examples/jsm/loaders/GLTFLoader.js",
             "three/examples/jsm/loaders/DRACOLoader": "https://unpkg.com/three@0.157.0/examples/jsm/loaders/DRACOLoader.js",
 =======
+=======
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98
     <title>GrassApp - Baltimore's Community-Focused Cannabis Delivery</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -52,11 +55,20 @@
     {
         "imports": {
             "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+<<<<<<< HEAD
 >>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
+=======
+            "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/",
+            "three/examples/jsm/controls/OrbitControls.js": "https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js",
+            "three/examples/jsm/loaders/GLTFLoader.js": "https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js",
+            "three/examples/jsm/loaders/DRACOLoader.js": "https://unpkg.com/three@0.158.0/examples/jsm/loaders/DRACOLoader.js",
+            "three/examples/jsm/renderers/CSS2DRenderer.js": "https://unpkg.com/three@0.158.0/examples/jsm/renderers/CSS2DRenderer.js",
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98
             "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@21.0.0/dist/tween.esm.js"
         }
     }
     </script>
+<<<<<<< HEAD
 <<<<<<< HEAD
     
     <!-- Preload critical resources -->
@@ -80,19 +92,26 @@
                 <img src="/img/GrassAppLogo.png" alt="GrassApp Logo" />
             </div>
 =======
+=======
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98
 </head>
 <body>
     <!-- Loading Screen -->
     <div class="loading-screen">
         <div class="loading-content">
+<<<<<<< HEAD
             <img src="assets/logo.png" alt="GrassApp Logo" class="logo">
 >>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
+=======
+            <img src="img/GrassAppLogo.png" alt="GrassApp Logo" class="logo">
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98
             <div class="loading-bar">
                 <div class="loading-progress"></div>
             </div>
         </div>
     </div>
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     <!-- Error Fallback -->
     <div id="error-fallback" class="error-overlay hidden">
@@ -102,6 +121,8 @@
             <pre class="error-details"></pre>
             <button onclick="location.reload()">Retry</button>
 =======
+=======
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98
     <!-- Error Screen -->
     <div class="error-screen hidden">
         <div class="error-content">
@@ -109,6 +130,7 @@
             <div class="error-message"></div>
             <div class="error-details"></div>
             <button onclick="location.reload()">Reload Page</button>
+<<<<<<< HEAD
 >>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
         </div>
     </div>
@@ -133,11 +155,33 @@
                 <button class="nav-button" onclick="selectDistrict('westBaltimore')">West Baltimore</button>
                 <button class="nav-button" onclick="selectDistrict('southBaltimore')">South Baltimore</button>
                 <button class="nav-button" onclick="selectDistrict('northBaltimore')">North Baltimore</button>
+=======
+        </div>
+    </div>
+
+    <!-- Top Logo -->
+    <div class="top-logo">
+        <img src="img/GrassAppLogo.png" alt="GrassApp Logo">
+    </div>
+
+    <!-- Navigation Panel -->
+    <div class="nav-panel">
+        <!-- Districts Section -->
+        <div class="nav-section">
+            <h3>DISTRICTS</h3>
+            <div class="button-container">
+                <button class="nav-button" onclick="selectDistrict('innerHarbor')">Baltimore Inner Harbor</button>
+                <button class="nav-button" onclick="selectDistrict('canton')">Canton</button>
+                <button class="nav-button" onclick="selectDistrict('fellsPoint')">Fells Point</button>
+                <button class="nav-button" onclick="selectDistrict('federalHill')">Federal Hill</button>
+                <button class="nav-button" onclick="selectDistrict('mountVernon')">Mount Vernon</button>
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98
             </div>
         </div>
 
         <!-- Pages Section -->
         <div class="nav-section">
+<<<<<<< HEAD
             <h3>Pages</h3>
             <div class="button-container">
                 <button class="nav-button" onclick="showInfoCards('about')">About Us</button>
@@ -503,10 +547,19 @@
                 <button class="close-button">×</button>
 =======
 >>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
+=======
+            <h3>PAGES</h3>
+            <div class="button-container">
+                <button class="nav-button" onclick="showPage('aboutUs')">About Us</button>
+                <button class="nav-button" onclick="showPage('medicalPatient')">Medical Patient</button>
+                <button class="nav-button" onclick="showPage('partnerWithUs')">Partner With Us</button>
+                <button class="nav-button" onclick="showPage('deliveryDriver')">Delivery Driver</button>
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98
             </div>
         </div>
     </div>
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     <!-- Logo -->
     <div id="corner-logo" class="corner-logo hidden">
@@ -542,5 +595,8 @@
 
     <script type="module" src="js/scripts.js"></script>
 >>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
+=======
+    <script type="module" src="js/scripts.js"></script>
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98
 </body>
 </html> 

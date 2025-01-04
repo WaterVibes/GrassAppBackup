@@ -20,11 +20,22 @@ export default defineConfig({
         }
       }
     },
+<<<<<<< HEAD
     assetsInlineLimit: 0
   },
   publicDir: 'public',
   assetsInclude: ['**/*.glb', '**/*.wasm', '**/*.js'],
   optimizeDeps: {
     exclude: ['draco3d']
+=======
+    assetsInlineLimit: 0,
+    copyPublicDir: true
+  },
+  publicDir: 'public',
+  assetsInclude: ['**/*.glb', '**/*.wasm', '**/*.js', '**/*.png'],
+  optimizeDeps: {
+    exclude: ['draco3d'],
+    include: ['three']
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98
   }
 }); 

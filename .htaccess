@@ -1,5 +1,6 @@
 # Security Headers
 <<<<<<< HEAD
+<<<<<<< HEAD
 Header always set Content-Security-Policy "\
     default-src 'self' blob:; \
     script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://unpkg.com https://ga.jspm.io https://cdnjs.cloudflare.com https://*.gstatic.com; \
@@ -64,6 +65,8 @@ AddType model/gltf-binary .glb
 AddType model/gltf+json .gltf
 AddType application/wasm .wasm 
 =======
+=======
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98
 Header always set X-Frame-Options "SAMEORIGIN" "expr=%{CONTENT_TYPE} =~ m#text/html#i"
 Header always set X-XSS-Protection "1; mode=block" "expr=%{CONTENT_TYPE} =~ m#text/html#i"
 Header always set X-Content-Type-Options "nosniff"
@@ -135,5 +138,9 @@ AddDefaultCharset UTF-8
 # Redirect all requests to index.html except for actual files and directories
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+<<<<<<< HEAD
 RewriteRule ^(.*)$ /index.html [L] 
 >>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
+=======
+RewriteRule ^(.*)$ /index.html [L] 
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98

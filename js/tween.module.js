@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 // TWEEN.js module wrapper
 import { TWEEN } from 'https://unpkg.com/@tweenjs/tween.js@21.0.0/dist/tween.esm.js';
 
@@ -8,6 +9,8 @@ export * from 'https://unpkg.com/@tweenjs/tween.js@21.0.0/dist/tween.esm.js';
 // Export default TWEEN object
 export default TWEEN; 
 =======
+=======
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98
 /**
  * The Ease class provides a collection of easing functions for use with tween.js.
  */
@@ -866,4 +869,7 @@ var exports = {
 };
 
 export { Easing, Group, Interpolation, Sequence, Tween, VERSION, add, exports as default, getAll, nextId, now, remove, removeAll, update };
+<<<<<<< HEAD
 >>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
+=======
+>>>>>>> 91116448d0793d9a1b9f50eeac0a32d8ed0e6b98
