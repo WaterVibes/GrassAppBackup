@@ -1119,18 +1119,19 @@ try {
                 loadingScreen.classList.add('hidden');
             }
             
-            // Show nav panel and top logo after a short delay
+            // Show nav panel and top logo after loading screen is hidden
             setTimeout(() => {
                 const navPanel = document.querySelector('.nav-panel');
                 const topLogo = document.querySelector('.top-left-logo');
                 
                 if (navPanel) {
+                    navPanel.classList.remove('collapsed');
                     navPanel.classList.add('visible');
                 }
                 if (topLogo) {
                     topLogo.classList.add('visible');
                 }
-            }, 500);
+            }, 1000); // Increased delay to ensure loading screen has faded out
         },
         (progress) => {
             if (loadingProgress) {
