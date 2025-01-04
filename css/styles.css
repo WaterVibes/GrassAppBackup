@@ -143,6 +143,14 @@ button:hover {
     border-radius: 10px;
     z-index: 1000;
     border: 1px solid #00ff00;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+.nav-panel.visible {
+    opacity: 1;
+    visibility: visible;
 }
 
 .nav-section {
@@ -807,7 +815,15 @@ button:hover {
     position: fixed;
     top: 20px;
     left: 20px;
-    z-index: 1000;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+.top-logo.visible {
+    opacity: 1;
+    visibility: visible;
 }
 
 .top-logo img {

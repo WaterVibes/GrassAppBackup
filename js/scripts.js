@@ -16,6 +16,16 @@ window.showPage = showPageImpl;
 // Get loading elements
 const loadingScreen = document.querySelector('.loading-screen');
 const loadingProgress = document.querySelector('.loading-progress');
+const topLogo = document.querySelector('.top-logo');
+const navPanel = document.querySelector('.nav-panel');
+
+// Function to show UI elements after loading
+function showUIElements() {
+    setTimeout(() => {
+        topLogo.classList.add('visible');
+        navPanel.classList.add('visible');
+    }, 200); // Small delay to ensure it happens after loading screen starts fading
+}
 
 // Initialize scene and camera
 scene = new THREE.Scene();
@@ -1100,39 +1110,7 @@ try {
             // Hide loading screen first
             if (loadingScreen) {
                 loadingScreen.classList.add('hidden');
-                
-                // Show nav panel and top logo only after loading screen starts fading
-                setTimeout(() => {
-                    const navPanel = document.querySelector('.nav-panel');
-                    const topLogo = document.querySelector('.top-left-logo');
-                    
-                    if (navPanel) {
-                        // Ensure panel is fully hidden before showing
-                        navPanel.style.display = 'none';
-                        navPanel.style.visibility = 'hidden';
-                        navPanel.style.opacity = '0';
-                        navPanel.style.pointerEvents = 'none';
-                        
-                        // Small delay before showing to ensure loading screen is gone
-                        requestAnimationFrame(() => {
-                            navPanel.style.display = 'block';
-                            navPanel.classList.add('visible');
-                        });
-                    }
-                    if (topLogo) {
-                        // Ensure logo is fully hidden before showing
-                        topLogo.style.display = 'none';
-                        topLogo.style.visibility = 'hidden';
-                        topLogo.style.opacity = '0';
-                        topLogo.style.pointerEvents = 'none';
-                        
-                        // Small delay before showing to ensure loading screen is gone
-                        requestAnimationFrame(() => {
-                            topLogo.style.display = 'block';
-                            topLogo.classList.add('visible');
-                        });
-                    }
-                }, 1000);
+                showUIElements(); // Call our new function to show UI elements
             }
         },
         (progress) => {
