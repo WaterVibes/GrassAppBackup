@@ -1266,56 +1266,25 @@ async function showPageImpl(pageName) {
     }
 }
 
+// Define valid marker locations
+const validLocations = [
+    'about_us',
+    'medical_patient',
+    'partner_with_us',
+    'delivery_driver',
+    'baltimore_inner_harbor',
+    'canton',
+    'fells_point',
+    'federal_hill',
+    'mount_vernon'
+];
+
 // Add marker system variables
 let isPlacingCameraMarker = false;
 let isPlacingSubjectMarker = false;
 let currentCameraMarker = null;
 let currentSubjectMarker = null;
 let markerName = '';
-
-// Add free roam camera functions
-function enableFreeRoamCamera() {
-    // Remove all constraints for free movement
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.screenSpacePanning = true;
-    controls.enablePan = true;
-    controls.enableZoom = true;
-    controls.enableRotate = true;
-    controls.maxPolarAngle = Math.PI; // Allow full vertical rotation
-    controls.minPolarAngle = 0;
-    controls.maxDistance = Infinity;
-    controls.minDistance = 0;
-    
-    // Store original fog settings
-    window.originalFog = {
-        near: scene.fog.near,
-        far: scene.fog.far
-    };
-    
-    // Disable fog temporarily
-    scene.fog.near = 10000;
-    scene.fog.far = 12000;
-}
-
-// Function to restore camera constraints
-function restoreCameraConstraints() {
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.screenSpacePanning = false;
-    controls.enablePan = true;
-    controls.panSpeed = isMobileDevice() ? 0.3 : 0.5;
-    controls.minDistance = isMobileDevice() ? 200 : 300;
-    controls.maxDistance = isMobileDevice() ? 1000 : 1200;
-    controls.maxPolarAngle = Math.PI / 2.1;
-    controls.minPolarAngle = Math.PI / 6;
-    
-    // Restore original fog settings
-    if (window.originalFog) {
-        scene.fog.near = window.originalFog.near;
-        scene.fog.far = window.originalFog.far;
-    }
-}
 
 // Function to create visible markers
 function createVisibleMarker(position, color) {
@@ -1325,23 +1294,6 @@ function createVisibleMarker(position, color) {
     marker.position.copy(position);
     scene.add(marker);
     return marker;
-}
-
-// Function to start camera marker placement
-function startCameraMarkerPlacement(name) {
-    isPlacingCameraMarker = true;
-    markerName = name;
-    console.log('Click to place camera marker');
-}
-
-// Function to start subject marker placement
-function startSubjectMarkerPlacement() {
-    if (!currentCameraMarker) {
-        console.log('Place camera marker first');
-        return;
-    }
-    isPlacingSubjectMarker = true;
-    console.log('Click to place subject marker');
 }
 
 // Function to save marker positions
@@ -1388,7 +1340,8 @@ function saveMarkerPositions() {
     currentCameraMarker = null;
     currentSubjectMarker = null;
     markerName = '';
-    nameInput.value = '';
+    locationSelect.value = '';
+    instructions.style.display = 'none';
 }
 
 // Add UI controls for marker system
@@ -1406,10 +1359,8 @@ markerControls.style.cssText = `
     z-index: 1000;
 `;
 
-const nameInput = document.createElement('input');
-nameInput.type = 'text';
-nameInput.placeholder = 'Marker name (e.g., district_name)';
-nameInput.style.cssText = `
+const locationSelect = document.createElement('select');
+locationSelect.style.cssText = `
     padding: 5px;
     border-radius: 3px;
     border: 1px solid #00ff00;
@@ -1418,19 +1369,21 @@ nameInput.style.cssText = `
     width: 200px;
 `;
 
-const placeButton = document.createElement('button');
-placeButton.textContent = 'Place Markers';
-placeButton.style.cssText = `
-    padding: 5px 10px;
-    border-radius: 3px;
-    border: 1px solid #00ff00;
-    background: rgba(0, 0, 0, 0.8);
-    color: #00ff00;
-    cursor: pointer;
-`;
+// Add default option
+const defaultOption = document.createElement('option');
+defaultOption.value = '';
+defaultOption.textContent = 'Select a location';
+locationSelect.appendChild(defaultOption);
+
+// Add location options
+validLocations.forEach(location => {
+    const option = document.createElement('option');
+    option.value = location;
+    option.textContent = location.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    locationSelect.appendChild(option);
+});
 
 const instructions = document.createElement('div');
-instructions.textContent = 'Click to place camera (red), then subject (green)';
 instructions.style.cssText = `
     position: fixed;
     top: 70px;
@@ -1444,22 +1397,116 @@ instructions.style.cssText = `
     display: none;
     z-index: 1000;
 `;
+instructions.innerHTML = `
+    Marker Controls:<br>
+    O - Place Camera Marker (Red)<br>
+    P - Place Subject Marker (Green)<br>
+    L - Save Marker Positions
+`;
+
+markerControls.appendChild(locationSelect);
+document.body.appendChild(markerControls);
 document.body.appendChild(instructions);
 
-placeButton.onclick = () => {
-    if (!nameInput.value) {
-        alert('Please enter a marker name');
-        return;
+// Add keyboard controls for marker placement
+document.addEventListener('keydown', (event) => {
+    const key = event.key.toLowerCase();
+    
+    // Only process marker controls if a location is selected
+    if (!locationSelect.value) return;
+
+    if (key === 'o') {
+        // Place camera marker
+        isPlacingCameraMarker = true;
+        isPlacingSubjectMarker = false;
+        markerName = locationSelect.value;
+        instructions.style.display = 'block';
+        console.log('Click to place camera marker');
+    } else if (key === 'p' && currentCameraMarker) {
+        // Place subject marker
+        isPlacingCameraMarker = false;
+        isPlacingSubjectMarker = true;
+        console.log('Click to place subject marker');
+    } else if (key === 'l' && currentCameraMarker && currentSubjectMarker) {
+        // Save marker positions
+        saveMarkerPositions();
     }
-    startCameraMarkerPlacement(nameInput.value);
-    instructions.style.display = 'block';
-};
+});
 
-markerControls.appendChild(nameInput);
-markerControls.appendChild(placeButton);
-document.body.appendChild(markerControls);
+// Add click event listener for marker placement
+renderer.domElement.addEventListener('click', (event) => {
+    if (!isPlacingCameraMarker && !isPlacingSubjectMarker) return;
 
-// Add free roam toggle
+    const rect = renderer.domElement.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
+
+    const intersects = raycaster.intersectObjects(scene.children, true);
+    if (intersects.length > 0) {
+        const point = intersects[0].point;
+
+        if (isPlacingCameraMarker) {
+            if (currentCameraMarker) scene.remove(currentCameraMarker);
+            currentCameraMarker = createVisibleMarker(point, 0xff0000);
+            isPlacingCameraMarker = false;
+            console.log('Camera marker placed (O). Press P to place subject marker');
+        } else if (isPlacingSubjectMarker) {
+            if (currentSubjectMarker) scene.remove(currentSubjectMarker);
+            currentSubjectMarker = createVisibleMarker(point, 0x00ff00);
+            isPlacingSubjectMarker = false;
+            console.log('Subject marker placed (P). Press L to save positions');
+        }
+    }
+});
+
+// Add free roam camera functions
+function enableFreeRoamCamera() {
+    // Remove all constraints for free movement
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.screenSpacePanning = true;
+    controls.enablePan = true;
+    controls.enableZoom = true;
+    controls.enableRotate = true;
+    controls.maxPolarAngle = Math.PI; // Allow full vertical rotation
+    controls.minPolarAngle = 0;
+    controls.maxDistance = Infinity;
+    controls.minDistance = 0;
+    
+    // Store original fog settings
+    window.originalFog = {
+        near: scene.fog.near,
+        far: scene.fog.far
+    };
+    
+    // Disable fog temporarily
+    scene.fog.near = 10000;
+    scene.fog.far = 12000;
+}
+
+// Function to restore camera constraints
+function restoreCameraConstraints() {
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.screenSpacePanning = false;
+    controls.enablePan = true;
+    controls.panSpeed = isMobileDevice() ? 0.3 : 0.5;
+    controls.minDistance = isMobileDevice() ? 200 : 300;
+    controls.maxDistance = isMobileDevice() ? 1000 : 1200;
+    controls.maxPolarAngle = Math.PI / 2.1;
+    controls.minPolarAngle = Math.PI / 6;
+    
+    // Restore original fog settings
+    if (window.originalFog) {
+        scene.fog.near = window.originalFog.near;
+        scene.fog.far = window.originalFog.far;
+    }
+}
+
+// Add free roam toggle button
 const freeRoamButton = document.createElement('button');
 freeRoamButton.textContent = 'Toggle Free Roam';
 freeRoamButton.style.cssText = `
@@ -1508,7 +1555,7 @@ document.addEventListener('keyup', (event) => {
 
 // Update camera movement in animation loop
 function updateCameraMovement() {
-    if (!controls.enabled) return;
+    if (!isFreeRoamEnabled) return;
 
     const forward = new THREE.Vector3();
     camera.getWorldDirection(forward);
@@ -1583,21 +1630,6 @@ function updateCameraMovement() {
     controls.update();
 }
 
-// Update the animate function to include camera movement
-function animate() {
-    requestAnimationFrame(animate);
-    updateCameraMovement();
-    controls.update();
-    TWEEN.update();
-    
-    // Apply constraints
-    constrainCamera();
-    updateFog();
-    
-    renderer.render(scene, camera);
-    labelRenderer.render(scene, camera);
-}
-
 // Add movement instructions to free roam button
 freeRoamButton.title = `
 Movement Controls:
@@ -1611,40 +1643,4 @@ Q - Rotate Left
 R - Rotate Right
 T - Tilt Up
 G - Tilt Down
-`;
-
-// Add click event listener for marker placement
-renderer.domElement.addEventListener('click', (event) => {
-    if (!isPlacingCameraMarker && !isPlacingSubjectMarker) return;
-
-    const rect = renderer.domElement.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
-
-    const intersects = raycaster.intersectObjects(scene.children, true);
-    if (intersects.length > 0) {
-        const point = intersects[0].point;
-
-        if (isPlacingCameraMarker) {
-            if (currentCameraMarker) scene.remove(currentCameraMarker);
-            currentCameraMarker = createVisibleMarker(point, 0xff0000);
-            isPlacingCameraMarker = false;
-            console.log('Camera marker placed, now place subject marker');
-            instructions.textContent = 'Now click to place subject marker (green)';
-            startSubjectMarkerPlacement();
-        } else if (isPlacingSubjectMarker) {
-            if (currentSubjectMarker) scene.remove(currentSubjectMarker);
-            currentSubjectMarker = createVisibleMarker(point, 0x00ff00);
-            isPlacingSubjectMarker = false;
-            console.log('Subject marker placed, ready to save');
-            instructions.textContent = 'Click to place camera (red), then subject (green)';
-            instructions.style.display = 'none';
-            saveMarkerPositions();
-        }
-    }
-});
-
-// ... rest of existing code ... 
+`; 
