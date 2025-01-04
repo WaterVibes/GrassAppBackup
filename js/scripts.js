@@ -780,7 +780,6 @@ function collapseNavPanel() {
             top: 50%;
             transform: translateY(-50%);
             height: auto;
-            max-height: 90vh;
             z-index: 1000;
             background: rgba(0, 0, 0, 0.8);
             padding: 15px;
@@ -790,7 +789,6 @@ function collapseNavPanel() {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            overflow-y: auto;
         }
         .nav-panel.collapsed {
             transform: translate(calc(100% - 50px), -50%);
@@ -831,7 +829,6 @@ function collapseNavPanel() {
                 padding: 10px;
                 top: 50%;
                 transform: translateY(-50%);
-                max-height: 80vh;
             }
             .nav-panel.collapsed {
                 transform: translate(calc(100% - 60px), -50%);
