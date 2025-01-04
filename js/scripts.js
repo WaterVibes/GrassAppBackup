@@ -797,6 +797,10 @@ function collapseNavPanel() {
         .nav-panel.collapsed {
             transform: translate(calc(100% - 40px), -50%);
         }
+        .nav-panel.collapsed .nav-button {
+            pointer-events: none;
+            opacity: 0.5;
+        }
         .nav-section {
             margin-bottom: 15px;
         }
@@ -875,26 +879,30 @@ function collapseNavPanel() {
         if (touchDuration < 200 && touchDistance < 10) {
             if (navPanel.classList.contains('collapsed')) {
                 navPanel.classList.remove('collapsed');
+                e.stopPropagation();
             }
         }
-    }, { passive: true });
+    }, { passive: false });
 
     // Add click handler for desktop
     navPanel.addEventListener('click', (e) => {
-        if (!isMobileDevice() && navPanel.classList.contains('collapsed') && e.target === navPanel) {
+        if (navPanel.classList.contains('collapsed')) {
             navPanel.classList.remove('collapsed');
+            e.stopPropagation();
         }
     });
 
     // Add click/touch handler to collapse panel when clicking/touching outside
     document.addEventListener('click', (e) => {
-        if (!navPanel.contains(e.target) && !navPanel.classList.contains('collapsed')) {
+        const navPanel = document.querySelector('.nav-panel');
+        if (navPanel && !navPanel.contains(e.target)) {
             navPanel.classList.add('collapsed');
         }
     });
 
     document.addEventListener('touchstart', (e) => {
-        if (!navPanel.contains(e.target) && !navPanel.classList.contains('collapsed')) {
+        const navPanel = document.querySelector('.nav-panel');
+        if (navPanel && !navPanel.contains(e.target)) {
             navPanel.classList.add('collapsed');
         }
     }, { passive: true });
@@ -929,13 +937,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle all navigation buttons
     const allButtons = document.querySelectorAll('.nav-button');
     allButtons.forEach(button => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', (e) => {
             const navPanel = document.querySelector('.nav-panel');
-            if (navPanel) {
+            if (navPanel && !navPanel.classList.contains('collapsed')) {
                 // Force immediate collapse
                 requestAnimationFrame(() => {
                     navPanel.classList.add('collapsed');
-                    navPanel.classList.remove('expanded');
                 });
             }
         });
