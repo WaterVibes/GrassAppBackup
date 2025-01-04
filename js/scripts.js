@@ -1398,69 +1398,57 @@ instructions.style.cssText = `
     z-index: 1000;
 `;
 instructions.innerHTML = `
-    Marker Controls:<br>
-    O - Place Camera Marker (Red)<br>
-    P - Place Subject Marker (Green)<br>
-    L - Save Marker Positions
+    Free Roam Marker Controls:<br>
+    O - Place Camera Marker (Red) at target position<br>
+    P - Place Subject Marker (Green) at target position<br>
+    L - Save and Download Marker Positions
 `;
 
 markerControls.appendChild(locationSelect);
 document.body.appendChild(markerControls);
 document.body.appendChild(instructions);
 
-// Add keyboard controls for marker placement
+// Function to place marker in front of camera
+function placeMarkerInFrontOfCamera(color) {
+    // Get camera direction
+    const direction = new THREE.Vector3();
+    camera.getWorldDirection(direction);
+    
+    // Calculate position 50 units in front of camera
+    const position = new THREE.Vector3();
+    position.copy(camera.position).add(direction.multiplyScalar(50));
+    
+    // Create and return the marker
+    return createVisibleMarker(position, color);
+}
+
+// Update keyboard controls for marker placement
 document.addEventListener('keydown', (event) => {
     const key = event.key.toLowerCase();
     
-    // Only process marker controls if a location is selected
-    if (!locationSelect.value) return;
+    // Only process marker controls if a location is selected and in free roam mode
+    if (!locationSelect.value || !isFreeRoamEnabled) return;
 
     if (key === 'o') {
-        // Place camera marker
-        isPlacingCameraMarker = true;
-        isPlacingSubjectMarker = false;
+        // Place camera marker at current camera position
+        if (currentCameraMarker) scene.remove(currentCameraMarker);
+        currentCameraMarker = placeMarkerInFrontOfCamera(0xff0000);
         markerName = locationSelect.value;
         instructions.style.display = 'block';
-        console.log('Click to place camera marker');
-    } else if (key === 'p' && currentCameraMarker) {
-        // Place subject marker
-        isPlacingCameraMarker = false;
-        isPlacingSubjectMarker = true;
-        console.log('Click to place subject marker');
+        console.log('Camera marker placed. Press P to place subject marker');
+    } else if (key === 'p') {
+        // Place subject marker in front of camera
+        if (currentSubjectMarker) scene.remove(currentSubjectMarker);
+        currentSubjectMarker = placeMarkerInFrontOfCamera(0x00ff00);
+        console.log('Subject marker placed. Press L to save positions');
     } else if (key === 'l' && currentCameraMarker && currentSubjectMarker) {
         // Save marker positions
         saveMarkerPositions();
     }
 });
 
-// Add click event listener for marker placement
-renderer.domElement.addEventListener('click', (event) => {
-    if (!isPlacingCameraMarker && !isPlacingSubjectMarker) return;
-
-    const rect = renderer.domElement.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
-
-    const intersects = raycaster.intersectObjects(scene.children, true);
-    if (intersects.length > 0) {
-        const point = intersects[0].point;
-
-        if (isPlacingCameraMarker) {
-            if (currentCameraMarker) scene.remove(currentCameraMarker);
-            currentCameraMarker = createVisibleMarker(point, 0xff0000);
-            isPlacingCameraMarker = false;
-            console.log('Camera marker placed (O). Press P to place subject marker');
-        } else if (isPlacingSubjectMarker) {
-            if (currentSubjectMarker) scene.remove(currentSubjectMarker);
-            currentSubjectMarker = createVisibleMarker(point, 0x00ff00);
-            isPlacingSubjectMarker = false;
-            console.log('Subject marker placed (P). Press L to save positions');
-        }
-    }
-});
+// Remove the click event listener since we're now placing markers directly
+renderer.domElement.removeEventListener('click', () => {});
 
 // Add free roam camera functions
 function enableFreeRoamCamera() {
