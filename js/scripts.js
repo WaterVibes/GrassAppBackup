@@ -821,12 +821,14 @@ function collapseNavPanel() {
     const style = document.createElement('style');
     style.textContent = `
         .nav-panel, .top-left-logo {
+            display: none !important;
             visibility: hidden !important;
             opacity: 0 !important;
             pointer-events: none !important;
             transition: none !important;
         }
         .nav-panel.visible, .top-left-logo.visible {
+            display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
             pointer-events: auto !important;
@@ -1106,23 +1108,27 @@ try {
                     
                     if (navPanel) {
                         // Ensure panel is fully hidden before showing
+                        navPanel.style.display = 'none';
                         navPanel.style.visibility = 'hidden';
                         navPanel.style.opacity = '0';
                         navPanel.style.pointerEvents = 'none';
                         
                         // Small delay before showing to ensure loading screen is gone
                         requestAnimationFrame(() => {
+                            navPanel.style.display = 'block';
                             navPanel.classList.add('visible');
                         });
                     }
                     if (topLogo) {
                         // Ensure logo is fully hidden before showing
+                        topLogo.style.display = 'none';
                         topLogo.style.visibility = 'hidden';
                         topLogo.style.opacity = '0';
                         topLogo.style.pointerEvents = 'none';
                         
                         // Small delay before showing to ensure loading screen is gone
                         requestAnimationFrame(() => {
+                            topLogo.style.display = 'block';
                             topLogo.classList.add('visible');
                         });
                     }
