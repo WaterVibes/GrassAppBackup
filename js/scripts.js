@@ -241,58 +241,49 @@ controls.target.copy(initialTarget);
 const districts = [
     {
         name: 'innerHarbor',
-        markerFile: 'marker_baltimore_inner_harbor_subject_subject_marker_1735195982517.json',
-        cameraFile: 'marker_baltimore_inner_harbor__1735194251759.json'
+        markerFile: 'optimized markers/marker_baltimore_inner_harbor_1735995279779.json'
     },
     {
         name: 'canton',
-        markerFile: 'marker_canton_subject_subject_marker_1735196858094.json',
-        cameraFile: 'marker_canton_camera_camera_marker_1735196801332.json'
+        markerFile: 'optimized markers/marker_canton_1735995578767.json'
     },
     {
         name: 'fellsPoint',
-        markerFile: 'marker_fells_point_subject__subject_marker_1735197073807.json',
-        cameraFile: 'marker_fells_point_camera_camera_marker_1735197031057.json'
+        markerFile: 'optimized markers/marker_fells_point_1735995790884.json'
     },
     {
         name: 'federalHill',
-        markerFile: 'marker_federal_hill_subject__subject_marker_1735196627275.json',
-        cameraFile: 'marker_federal_hill_marker_camera_marker_1735196516687.json'
+        markerFile: 'optimized markers/marker_federal_hill_1735995980501.json'
     },
     {
         name: 'mountVernon',
-        markerFile: 'marker_mount_vernon_subject__subject_marker_1735197588128.json',
-        cameraFile: 'marker_mount_vernon_camera_camera_marker_1735197513333.json'
+        markerFile: 'optimized markers/marker_mount_vernon_1735996124326.json'
     }
 ];
 
 const pages = [
     {
         name: 'aboutUs',
-        markerFile: 'marker_about_us_subject__subject_marker_1735199597502.json',
-        cameraFile: 'marker_about_us_camera_camera_marker_1735199541761.json'
+        markerFile: 'optimized markers/marker_about_us_1735994495867.json'
     },
     {
         name: 'medicalPatient',
-        markerFile: 'marker_medical_patient_subject_marker_1735199228409.json',
-        cameraFile: 'marker_medical_patient_camera_camera_marker_1735199161321.json'
+        markerFile: 'optimized markers/marker_medical_patient_1735994718056.json'
     },
     {
         name: 'partnerWithUs',
-        markerFile: 'marker_partnership_subject__subject_marker_1735199019215.json',
-        cameraFile: 'marker_partnership_camera_marker_1735198971796.json'
+        markerFile: 'optimized markers/marker_partner_with_us_1735994991665.json'
     },
     {
         name: 'deliveryDriver',
-        markerFile: 'marker_delivery_driver_subject_subject_marker_1735200573413.json',
-        cameraFile: 'marker_deliverydrivers_camera_marker_1735200540288.json'
+        markerFile: 'optimized markers/marker_delivery_driver_1735995071394.json'
     }
 ];
 
 // Function to load marker data
 async function loadMarkerData(markerFile) {
     try {
-        const response = await fetch(`markers/${markerFile}`);
+        const response = await fetch(`${markerFile}`);
         const data = await response.json();
         
         return {
@@ -305,11 +296,6 @@ async function loadMarkerData(markerFile) {
                 x: data.target.x || "0",
                 y: data.target.y || "0",
                 z: data.target.z || "0"
-            } : null,
-            subject: data.subject ? {
-                x: data.subject.x || "0",
-                y: data.subject.y || "0",
-                z: data.subject.z || "0"
             } : null
         };
     } catch (error) {
@@ -318,44 +304,11 @@ async function loadMarkerData(markerFile) {
     }
 }
 
-// Function to create a debug sphere
-function createDebugSphere(position, color = 0xff0000, size = 10) {
-    const geometry = new THREE.SphereGeometry(size, 16, 16);
-    const material = new THREE.MeshBasicMaterial({ color: color });
-    const sphere = new THREE.Mesh(geometry, material);
-    sphere.position.set(
-        parseFloat(position.x),
-        parseFloat(position.y),
-        parseFloat(position.z)
-    );
-    scene.add(sphere);
-    
-    // Add a line from camera to target if both positions are provided
-    if (position.targetPos) {
-        const points = [
-            new THREE.Vector3(
-                parseFloat(position.x),
-                parseFloat(position.y),
-                parseFloat(position.z)
-            ),
-            new THREE.Vector3(
-                parseFloat(position.targetPos.x),
-                parseFloat(position.targetPos.y),
-                parseFloat(position.targetPos.z)
-            )
-        ];
-        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-        const lineMaterial = new THREE.LineBasicMaterial({ color: color });
-        const line = new THREE.Line(lineGeometry, lineMaterial);
-        scene.add(line);
-    }
-}
-
 // Function to create a marker and label
-async function createMarker(data, color = 0x00ff00) {
+async function createMarker(data) {
     try {
-    const markerData = await loadMarkerData(data.markerFile);
-    if (!markerData) return;
+        const markerData = await loadMarkerData(data.markerFile);
+        if (!markerData) return;
 
         // Store marker data but don't create visible spheres
         return markerData;
@@ -390,16 +343,16 @@ async function selectDistrictImpl(districtName) {
 
     try {
         const markerData = await loadMarkerData(district.markerFile);
-        if (!markerData || !markerData.camera || !markerData.subject) {
+        if (!markerData || !markerData.camera || !markerData.target) {
             console.error('Marker data not found for district:', districtName);
             return;
         }
 
-        // Use camera position for camera and subject position for target
+        // Use camera position for camera and target position for target
         const targetPos = new THREE.Vector3(
-            parseFloat(markerData.subject.x),
-            parseFloat(markerData.subject.y),
-            parseFloat(markerData.subject.z)
+            parseFloat(markerData.target.x),
+            parseFloat(markerData.target.y),
+            parseFloat(markerData.target.z)
         );
         const cameraPos = new THREE.Vector3(
             parseFloat(markerData.camera.x),
@@ -1203,7 +1156,7 @@ function showError(message, details) {
     }
 } 
 
-// Update showPageImpl to use subject position as target
+// Update showPageImpl to use target position
 async function showPageImpl(pageName) {
     removeExistingInfoCard();
 
@@ -1216,16 +1169,16 @@ async function showPageImpl(pageName) {
 
     try {
         const markerData = await loadMarkerData(page.markerFile);
-        if (!markerData || !markerData.camera || !markerData.subject) {
+        if (!markerData || !markerData.camera || !markerData.target) {
             console.error('Marker data not found for page:', pageName);
             return;
         }
 
-        // Use camera position for camera and subject position for target
+        // Use camera position for camera and target position for target
         const targetPos = new THREE.Vector3(
-            parseFloat(markerData.subject.x),
-            parseFloat(markerData.subject.y),
-            parseFloat(markerData.subject.z)
+            parseFloat(markerData.target.x),
+            parseFloat(markerData.target.y),
+            parseFloat(markerData.target.z)
         );
         const cameraPos = new THREE.Vector3(
             parseFloat(markerData.camera.x),
