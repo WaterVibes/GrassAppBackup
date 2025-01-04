@@ -897,6 +897,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (districtName) {
                 console.log('Moving to district:', districtName);
                 window.selectDistrict(districtName);
+                
                 // Force nav panel collapse
                 const navPanel = document.querySelector('.nav-container');
                 if (navPanel) {
@@ -905,13 +906,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         navPanel.classList.add('collapsed');
                     } else {
                         navPanel.classList.add('collapsed');
+                        navPanel.classList.remove('expanded');
                     }
                 }
             }
         });
     });
 
-    // Handle page buttons
+    // Handle page buttons with same collapse behavior
     const pageButtons = document.querySelectorAll('.pages-container button');
     pageButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -924,6 +926,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             const pageName = pageMap[buttonText] || buttonText;
             window.showPage(pageName);
+            
             // Force nav panel collapse
             const navPanel = document.querySelector('.nav-container');
             if (navPanel) {
@@ -932,6 +935,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     navPanel.classList.add('collapsed');
                 } else {
                     navPanel.classList.add('collapsed');
+                    navPanel.classList.remove('expanded');
                 }
             }
         });
@@ -968,19 +972,15 @@ try {
             model.position.sub(center);
             
             scene.add(model);
-
-            // Update controls based on model size
-            controls.target.set(0, 0, 0);
-            controls.maxDistance = 1500;
-            controls.minDistance = 100;
-            
             createAllMarkers();
             
-            // Expand nav panel after loading
-            const navPanel = document.querySelector('.nav-container');
-            if (navPanel) {
-                navPanel.classList.remove('collapsed');
-            }
+            // Remove collapsed class after loading
+            setTimeout(() => {
+                const navPanel = document.querySelector('.nav-container');
+                if (navPanel) {
+                    navPanel.classList.remove('collapsed');
+                }
+            }, 500); // Small delay to ensure smooth transition
             
             if (loadingScreen) {
                 loadingScreen.classList.add('hidden');
@@ -1086,6 +1086,16 @@ function showError(message, details) {
 async function showPageImpl(pageName) {
     // Remove any existing card immediately
     removeExistingInfoCard();
+
+    // Handle first selection and panel collapse
+    if (!hasFirstSelection) {
+        hasFirstSelection = true;
+        const navPanel = document.querySelector('.nav-container');
+        if (navPanel) {
+            navPanel.classList.add('collapsed');
+            navPanel.classList.remove('expanded');
+        }
+    }
 
     console.log('Looking for page:', pageName);
     const page = pages.find(p => p.name === pageName);
