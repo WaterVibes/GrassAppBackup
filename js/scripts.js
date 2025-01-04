@@ -1,6 +1,39 @@
-// Core Three.js setup and animation
-// ... existing code ...
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import * as TWEEN from '@tweenjs/tween.js';
 
+// Initialize scene, camera, and renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+const labelRenderer = new CSS2DRenderer();
+const controls = new OrbitControls(camera, renderer.domElement);
+
+// Setup scene
+scene.fog = new THREE.Fog(0x000000, 2500, 3500);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+document.body.appendChild(renderer.domElement);
+
+// Setup label renderer
+labelRenderer.setSize(window.innerWidth, window.innerHeight);
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = '0';
+labelRenderer.domElement.style.pointerEvents = 'none';
+document.body.appendChild(labelRenderer.domElement);
+
+// Setup controls
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.screenSpacePanning = false;
+controls.minDistance = 200;
+controls.maxDistance = 1000;
+controls.maxPolarAngle = Math.PI / 2;
+
+// Animation loop
 function animate() {
     requestAnimationFrame(animate);
     controls.update();
@@ -11,6 +44,7 @@ function animate() {
     labelRenderer.render(scene, camera);
 }
 
+// Update fog based on camera position
 function updateFog() {
     const distanceFromCenter = Math.sqrt(
         camera.position.x * camera.position.x + 
@@ -31,6 +65,7 @@ function updateFog() {
     }
 }
 
+// Constrain camera movement
 function constrainCamera() {
     const maxRadius = 1200;
     const minHeight = 200;
@@ -65,6 +100,14 @@ function constrainCamera() {
     
     camera.position.copy(pos);
 }
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
+});
 
 // Start animation loop
 animate(); 
