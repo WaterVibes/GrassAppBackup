@@ -770,7 +770,7 @@ function collapseNavPanel() {
     const navPanel = document.querySelector('.nav-panel');
     if (!navPanel) return;
 
-    // Add CSS for panel animation with hover behavior
+    // Add CSS for panel animation with click behavior
     const style = document.createElement('style');
     style.textContent = `
         .nav-panel {
@@ -794,9 +794,6 @@ function collapseNavPanel() {
         }
         .nav-panel.collapsed {
             transform: translate(calc(100% - 50px), -50%);
-        }
-        .nav-panel.collapsed:hover {
-            transform: translate(0, -50%);
         }
         .nav-section {
             margin-bottom: 20px;
@@ -837,10 +834,6 @@ function collapseNavPanel() {
             .nav-panel.collapsed {
                 transform: translate(calc(100% - 60px), -50%);
             }
-            .nav-panel.collapsed:hover,
-            .nav-panel.collapsed.touch-hover {
-                transform: translate(0, -50%);
-            }
             .nav-panel.expanded {
                 transform: translate(0, -50%);
             }
@@ -852,23 +845,19 @@ function collapseNavPanel() {
     `;
     document.head.appendChild(style);
 
-    // Add hover/touch behavior after first selection
-    if (isMobileDevice()) {
-        let touchTimeout;
-        navPanel.addEventListener('touchstart', () => {
-            if (hasFirstSelection && navPanel.classList.contains('collapsed')) {
-                clearTimeout(touchTimeout);
-                navPanel.classList.add('touch-hover');
-            }
-        });
-        navPanel.addEventListener('touchend', () => {
-            if (hasFirstSelection) {
-                touchTimeout = setTimeout(() => {
-                    navPanel.classList.remove('touch-hover');
-                }, 2000);
-            }
-        });
-    }
+    // Add click behavior for panel expansion
+    navPanel.addEventListener('click', (e) => {
+        if (navPanel.classList.contains('collapsed') && e.target === navPanel) {
+            navPanel.classList.remove('collapsed');
+        }
+    });
+
+    // Add click handler to collapse panel when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!navPanel.contains(e.target) && !navPanel.classList.contains('collapsed')) {
+            navPanel.classList.add('collapsed');
+        }
+    });
 }
 
 // Update toggleNavPanel function with correct class name
@@ -893,19 +882,31 @@ function toggleNavPanel() {
 document.addEventListener('DOMContentLoaded', () => {
     const navPanel = document.querySelector('.nav-panel');
     if (navPanel) {
-        const pagesSection = navPanel.querySelector('.nav-section:last-child');
-        const districtsSection = navPanel.querySelector('.nav-section:first-child');
+        // Get the sections
+        const sections = Array.from(navPanel.children);
+        
+        // Find the Pages and Districts sections
+        const pagesSection = sections.find(section => 
+            section.querySelector('h3')?.textContent.trim() === 'PAGES'
+        );
+        const districtsSection = sections.find(section => 
+            section.querySelector('h3')?.textContent.trim() === 'DISTRICTS'
+        );
+
+        // If both sections exist, reorder them
         if (pagesSection && districtsSection) {
-            navPanel.insertBefore(pagesSection, districtsSection);
+            navPanel.innerHTML = '';
+            navPanel.appendChild(pagesSection);
+            navPanel.appendChild(districtsSection);
         }
     }
     
     // Initialize nav panel collapse functionality
     collapseNavPanel();
     
-    // Handle district buttons
-    const districtButtons = document.querySelectorAll('.nav-section .nav-button');
-    districtButtons.forEach(button => {
+    // Handle district and page buttons
+    const allButtons = document.querySelectorAll('.nav-button');
+    allButtons.forEach(button => {
         button.addEventListener('click', () => {
             // Force nav panel collapse immediately
             const navPanel = document.querySelector('.nav-panel');
@@ -913,43 +914,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 navPanel.classList.add('collapsed');
                 navPanel.classList.remove('expanded');
             }
-
-            const buttonText = button.textContent.trim();
-            const districtMap = {
-                'Baltimore Inner Harbor': 'innerHarbor',
-                'Canton': 'canton',
-                'Fells Point': 'fellsPoint',
-                'Federal Hill': 'federalHill',
-                'Mount Vernon': 'mountVernon'
-            };
-            const districtName = districtMap[buttonText];
-            if (districtName) {
-                console.log('Moving to district:', districtName);
-                window.selectDistrict(districtName);
-            }
-        });
-    });
-
-    // Handle page buttons with same collapse behavior
-    const pageButtons = document.querySelectorAll('.pages-container button');
-    pageButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Force nav panel collapse immediately
-            const navPanel = document.querySelector('.nav-panel');
-            if (navPanel) {
-                navPanel.classList.add('collapsed');
-                navPanel.classList.remove('expanded');
-            }
-
-            const buttonText = button.textContent.trim();
-            const pageMap = {
-                'About Us': 'aboutUs',
-                'Medical Patient': 'medicalPatient',
-                'Partner With Us': 'partnerWithUs',
-                'Delivery Driver': 'deliveryDriver'
-            };
-            const pageName = pageMap[buttonText] || buttonText;
-            window.showPage(pageName);
         });
     });
 });
