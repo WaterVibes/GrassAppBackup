@@ -820,32 +820,13 @@ function collapseNavPanel() {
     // Add CSS for panel animation with click behavior
     const style = document.createElement('style');
     style.textContent = `
-        .nav-panel {
+        .nav-panel, .top-left-logo {
             visibility: hidden !important;
             opacity: 0 !important;
             pointer-events: none !important;
             transition: none !important;
-            position: fixed;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            height: auto;
-            margin: 20px 0;
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 15px;
-            border-left: 1px solid #00ff00;
-            box-shadow: -5px 0 15px rgba(0, 255, 0, 0.1);
-            width: 180px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            overflow: visible;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: none;
         }
-        .nav-panel.visible {
+        .nav-panel.visible, .top-left-logo.visible {
             visibility: visible !important;
             opacity: 1 !important;
             pointer-events: auto !important;
@@ -1132,11 +1113,18 @@ try {
                         // Small delay before showing to ensure loading screen is gone
                         requestAnimationFrame(() => {
                             navPanel.classList.add('visible');
-                            // Don't add collapsed class so panel starts expanded
                         });
                     }
                     if (topLogo) {
-                        topLogo.classList.add('visible');
+                        // Ensure logo is fully hidden before showing
+                        topLogo.style.visibility = 'hidden';
+                        topLogo.style.opacity = '0';
+                        topLogo.style.pointerEvents = 'none';
+                        
+                        // Small delay before showing to ensure loading screen is gone
+                        requestAnimationFrame(() => {
+                            topLogo.classList.add('visible');
+                        });
                     }
                 }, 1000);
             }
