@@ -770,23 +770,28 @@ function collapseNavPanel() {
     const navPanel = document.querySelector('.nav-panel');
     if (!navPanel) return;
 
-    // Add CSS for panel with exact styling from image 2
+    // Add CSS for panel animation with hover behavior
     const style = document.createElement('style');
     style.textContent = `
         .nav-panel {
+            transition: transform 0.3s ease;
             position: fixed;
             right: 0;
             top: 0;
-            height: 100%;
+            height: 100vh;
             z-index: 1000;
             background: rgba(0, 0, 0, 0.8);
-            padding: 10px;
+            transform: translateX(0);
+            padding: 15px;
             border-left: 1px solid #00ff00;
             box-shadow: -5px 0 15px rgba(0, 255, 0, 0.1);
             width: 200px;
             display: flex;
             flex-direction: column;
             justify-content: center;
+        }
+        .nav-panel.collapsed {
+            transform: translateX(100%);
         }
         .nav-section {
             margin-bottom: 15px;
@@ -817,29 +822,76 @@ function collapseNavPanel() {
         }
         @media (max-width: 768px) {
             .nav-panel {
-                width: 180px;
+                width: 60%;
+                padding: 10px;
+            }
+            .nav-panel.collapsed {
+                transform: translateX(100%);
+            }
+            .nav-panel.expanded {
+                transform: translateX(0);
             }
             .nav-button {
-                padding: 6px 12px;
-                font-size: 13px;
-            }
-            .nav-section h3 {
-                font-size: 16px;
+                padding: 10px;
+                font-size: 14px;
             }
         }
     `;
     document.head.appendChild(style);
+
+    // Add hover/touch behavior after first selection
+    if (isMobileDevice()) {
+        let touchTimeout;
+        navPanel.addEventListener('touchstart', () => {
+            if (hasFirstSelection && navPanel.classList.contains('collapsed')) {
+                clearTimeout(touchTimeout);
+                navPanel.classList.add('touch-hover');
+            }
+        });
+        navPanel.addEventListener('touchend', () => {
+            if (hasFirstSelection) {
+                touchTimeout = setTimeout(() => {
+                    navPanel.classList.remove('touch-hover');
+                }, 2000);
+            }
+        });
+    }
 }
 
-// Update button click handlers to just handle the click without panel collapse
+// Update toggleNavPanel function with correct class name
+function toggleNavPanel() {
+    const navPanel = document.querySelector('.nav-panel');
+    if (!navPanel) return;
+    
+    if (isMobileDevice()) {
+        if (navPanel.classList.contains('expanded')) {
+            navPanel.classList.remove('expanded');
+            navPanel.classList.add('collapsed');
+        } else {
+            navPanel.classList.remove('collapsed');
+            navPanel.classList.add('expanded');
+        }
+    } else {
+        navPanel.classList.toggle('collapsed');
+    }
+}
+
+// Update button click handlers with correct class name
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize nav panel
+    // Initialize nav panel collapse functionality
     collapseNavPanel();
 
     // Handle district buttons
     const districtButtons = document.querySelectorAll('.nav-section .nav-button');
     districtButtons.forEach(button => {
         button.addEventListener('click', () => {
+            // Force nav panel collapse immediately
+            const navPanel = document.querySelector('.nav-panel');
+            if (navPanel) {
+                navPanel.classList.add('collapsed');
+                navPanel.classList.remove('expanded');
+            }
+
             const buttonText = button.textContent.trim();
             const districtMap = {
                 'Baltimore Inner Harbor': 'innerHarbor',
@@ -856,10 +908,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Handle page buttons
+    // Handle page buttons with same collapse behavior
     const pageButtons = document.querySelectorAll('.pages-container button');
     pageButtons.forEach(button => {
         button.addEventListener('click', () => {
+            // Force nav panel collapse immediately
+            const navPanel = document.querySelector('.nav-panel');
+            if (navPanel) {
+                navPanel.classList.add('collapsed');
+                navPanel.classList.remove('expanded');
+            }
+
             const buttonText = button.textContent.trim();
             const pageMap = {
                 'About Us': 'aboutUs',
