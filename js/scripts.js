@@ -791,6 +791,8 @@ function collapseNavPanel() {
             flex-direction: column;
             justify-content: center;
             overflow: visible;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         .nav-panel.collapsed {
             transform: translate(calc(100% - 40px), -50%);
@@ -827,37 +829,75 @@ function collapseNavPanel() {
         }
         @media (max-width: 768px) {
             .nav-panel {
-                width: 65%;
-                padding: 12px;
-                margin: 15px 0;
+                width: 55%;
+                padding: 10px;
+                margin: 10px 0;
+                max-height: 85vh;
             }
             .nav-panel.collapsed {
-                transform: translate(calc(100% - 45px), -50%);
+                transform: translate(calc(100% - 35px), -50%);
             }
             .nav-panel.expanded {
                 transform: translate(0, -50%);
             }
+            .nav-section {
+                margin-bottom: 10px;
+            }
+            .nav-section h3 {
+                font-size: 14px;
+                margin: 5px 0;
+            }
             .nav-button {
-                padding: 8px;
-                font-size: 13px;
+                padding: 7px;
+                margin: 2px 0;
+                font-size: 12px;
             }
         }
     `;
     document.head.appendChild(style);
 
-    // Add click behavior for panel expansion
+    // Add touch/click behavior for panel expansion
+    let touchStartX = 0;
+    let touchStartTime = 0;
+
+    navPanel.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartTime = Date.now();
+    }, { passive: true });
+
+    navPanel.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndTime = Date.now();
+        const touchDuration = touchEndTime - touchStartTime;
+        const touchDistance = Math.abs(touchEndX - touchStartX);
+
+        // If it's a quick tap (less than 200ms) and minimal movement (less than 10px)
+        if (touchDuration < 200 && touchDistance < 10) {
+            if (navPanel.classList.contains('collapsed')) {
+                navPanel.classList.remove('collapsed');
+            }
+        }
+    }, { passive: true });
+
+    // Add click handler for desktop
     navPanel.addEventListener('click', (e) => {
-        if (navPanel.classList.contains('collapsed') && e.target === navPanel) {
+        if (!isMobileDevice() && navPanel.classList.contains('collapsed') && e.target === navPanel) {
             navPanel.classList.remove('collapsed');
         }
     });
 
-    // Add click handler to collapse panel when clicking outside
+    // Add click/touch handler to collapse panel when clicking/touching outside
     document.addEventListener('click', (e) => {
         if (!navPanel.contains(e.target) && !navPanel.classList.contains('collapsed')) {
             navPanel.classList.add('collapsed');
         }
     });
+
+    document.addEventListener('touchstart', (e) => {
+        if (!navPanel.contains(e.target) && !navPanel.classList.contains('collapsed')) {
+            navPanel.classList.add('collapsed');
+        }
+    }, { passive: true });
 }
 
 // Update button click handlers
