@@ -780,23 +780,23 @@ function collapseNavPanel() {
             top: 50%;
             transform: translateY(-50%);
             height: auto;
-            margin: 40px 0;
+            margin: 20px 0;
             z-index: 1000;
             background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
+            padding: 15px;
             border-left: 1px solid #00ff00;
             box-shadow: -5px 0 15px rgba(0, 255, 0, 0.1);
-            width: 200px;
+            width: 180px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             overflow: visible;
         }
         .nav-panel.collapsed {
-            transform: translate(calc(100% - 50px), -50%);
+            transform: translate(calc(100% - 40px), -50%);
         }
         .nav-section {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .nav-section:last-child {
             margin-bottom: 0;
@@ -804,8 +804,8 @@ function collapseNavPanel() {
         .nav-section h3 {
             color: #00ff00;
             text-align: center;
-            margin: 10px 0;
-            font-size: 18px;
+            margin: 8px 0;
+            font-size: 16px;
             font-family: 'Poppins', sans-serif;
             text-transform: uppercase;
         }
@@ -814,11 +814,11 @@ function collapseNavPanel() {
             border: 1px solid #00ff00;
             color: #00ff00;
             width: 100%;
-            padding: 8px 15px;
-            margin: 4px 0;
+            padding: 6px 12px;
+            margin: 3px 0;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             transition: all 0.3s ease;
             font-family: 'Poppins', sans-serif;
         }
@@ -827,19 +827,19 @@ function collapseNavPanel() {
         }
         @media (max-width: 768px) {
             .nav-panel {
-                width: 70%;
-                padding: 15px;
-                margin: 30px 0;
+                width: 65%;
+                padding: 12px;
+                margin: 15px 0;
             }
             .nav-panel.collapsed {
-                transform: translate(calc(100% - 60px), -50%);
+                transform: translate(calc(100% - 45px), -50%);
             }
             .nav-panel.expanded {
                 transform: translate(0, -50%);
             }
             .nav-button {
-                padding: 10px;
-                font-size: 14px;
+                padding: 8px;
+                font-size: 13px;
             }
         }
     `;
@@ -860,25 +860,7 @@ function collapseNavPanel() {
     });
 }
 
-// Update toggleNavPanel function with correct class name
-function toggleNavPanel() {
-    const navPanel = document.querySelector('.nav-panel');
-    if (!navPanel) return;
-    
-    if (isMobileDevice()) {
-        if (navPanel.classList.contains('expanded')) {
-            navPanel.classList.remove('expanded');
-            navPanel.classList.add('collapsed');
-        } else {
-            navPanel.classList.remove('collapsed');
-            navPanel.classList.add('expanded');
-        }
-    } else {
-        navPanel.classList.toggle('collapsed');
-    }
-}
-
-// Update button click handlers with correct class name
+// Update button click handlers
 document.addEventListener('DOMContentLoaded', () => {
     const navPanel = document.querySelector('.nav-panel');
     if (navPanel) {
@@ -904,19 +886,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize nav panel collapse functionality
     collapseNavPanel();
     
-    // Handle district and page buttons
+    // Handle all navigation buttons
     const allButtons = document.querySelectorAll('.nav-button');
     allButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Force nav panel collapse immediately
             const navPanel = document.querySelector('.nav-panel');
             if (navPanel) {
-                navPanel.classList.add('collapsed');
-                navPanel.classList.remove('expanded');
+                // Force immediate collapse
+                requestAnimationFrame(() => {
+                    navPanel.classList.add('collapsed');
+                    navPanel.classList.remove('expanded');
+                });
             }
         });
     });
+
+    // Start with panel collapsed
+    if (navPanel) {
+        navPanel.classList.add('collapsed');
+    }
 });
+
+// Remove any hover-based expansion
+function toggleNavPanel() {
+    const navPanel = document.querySelector('.nav-panel');
+    if (!navPanel) return;
+    
+    if (navPanel.classList.contains('collapsed')) {
+        navPanel.classList.remove('collapsed');
+    } else {
+        navPanel.classList.add('collapsed');
+    }
+}
 
 try {
     // Initialize loaders
