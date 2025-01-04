@@ -819,6 +819,13 @@ function collapseNavPanel() {
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             touch-action: none;
+            visibility: hidden;
+            opacity: 0;
+        }
+        .nav-panel.visible {
+            visibility: visible;
+            opacity: 1;
+            transition: visibility 0s, opacity 0.5s ease;
         }
         .nav-panel.collapsed {
             transform: translate(calc(100% - 40px), -50%);
@@ -1075,8 +1082,7 @@ try {
             
             // Set model orientation to match the top-down view
             model.scale.set(1, 1, 1);
-            model.rotation.x = 0; // Remove the -Math.PI/2 rotation that was causing the issue
-            model.rotation.y = Math.PI; // Rotate 180 degrees around Y axis to face correct direction
+            model.rotation.y = Math.PI;
             
             // Center the model
             const box = new THREE.Box3().setFromObject(model);
@@ -1086,17 +1092,19 @@ try {
             scene.add(model);
             createAllMarkers();
             
-            // Remove collapsed class after loading
-            setTimeout(() => {
-                const navPanel = document.querySelector('.nav-panel');
-                if (navPanel) {
-                    navPanel.classList.remove('collapsed');
-                }
-            }, 500); // Small delay to ensure smooth transition
-            
+            // Hide loading screen first
             if (loadingScreen) {
                 loadingScreen.classList.add('hidden');
             }
+            
+            // Show nav panel after a short delay
+            setTimeout(() => {
+                const navPanel = document.querySelector('.nav-panel');
+                if (navPanel) {
+                    navPanel.classList.add('visible');
+                    navPanel.classList.add('collapsed');
+                }
+            }, 500);
         },
         (progress) => {
             if (loadingProgress) {
