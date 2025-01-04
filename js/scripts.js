@@ -283,7 +283,7 @@ const pages = [
 // Function to load marker data
 async function loadMarkerData(markerFile) {
     try {
-        const response = await fetch(`grassapp/${markerFile}`);
+        const response = await fetch(markerFile);
         const data = await response.json();
         
         return {
