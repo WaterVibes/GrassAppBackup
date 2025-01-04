@@ -1080,4 +1080,76 @@ function showError(message, details) {
     if (loadingScreen) {
         loadingScreen.classList.add('hidden');
     }
+}
+
+// Update showPageImpl to handle card timing better
+async function showPageImpl(pageName) {
+    // Remove any existing card immediately
+    removeExistingInfoCard();
+
+    console.log('Looking for page:', pageName);
+    const page = pages.find(p => p.name === pageName);
+    if (!page) {
+        console.error('Page not found:', pageName);
+        return;
+    }
+
+    try {
+        const cameraData = await loadMarkerData(page.cameraFile);
+        if (!cameraData) {
+            console.error('Camera data not found for page:', pageName);
+            return;
+        }
+
+        const targetPos = new THREE.Vector3(
+            parseFloat(cameraData.target.x),
+            parseFloat(cameraData.target.y),
+            parseFloat(cameraData.target.z)
+        );
+        const cameraPos = new THREE.Vector3(
+            parseFloat(cameraData.camera.x),
+            parseFloat(cameraData.camera.y),
+            parseFloat(cameraData.camera.z)
+        );
+
+        // Track camera movement completion
+        let cameraMovementComplete = false;
+        let targetMovementComplete = false;
+
+        // Camera position tween
+        new TWEEN.Tween(camera.position)
+            .to(cameraPos, 1500)
+            .easing(TWEEN.Easing.Cubic.InOut)
+            .onComplete(() => {
+                cameraMovementComplete = true;
+                if (targetMovementComplete) {
+                    showInfoCard(pageName);
+                }
+            })
+            .start();
+
+        // Target position tween
+        new TWEEN.Tween(controls.target)
+            .to(targetPos, 1500)
+            .easing(TWEEN.Easing.Cubic.InOut)
+            .onComplete(() => {
+                targetMovementComplete = true;
+                if (cameraMovementComplete) {
+                    showInfoCard(pageName);
+                }
+            })
+            .start();
+
+        // Handle first selection
+        if (!hasFirstSelection) {
+            hasFirstSelection = true;
+            const navPanel = document.querySelector('.nav-container');
+            if (navPanel) {
+                navPanel.classList.add('collapsed');
+            }
+        }
+
+    } catch (error) {
+        console.error('Error moving camera to page:', pageName, error);
+    }
 } 
