@@ -33,6 +33,93 @@ controls.minDistance = 200;
 controls.maxDistance = 1000;
 controls.maxPolarAngle = Math.PI / 2;
 
+// Camera movement functions
+function moveCamera(targetPosition, targetLookAt, duration = 2000) {
+    const startPosition = camera.position.clone();
+    const startRotation = camera.quaternion.clone();
+
+    // Create a temporary camera to calculate the target rotation
+    const tempCamera = camera.clone();
+    tempCamera.position.copy(targetPosition);
+    tempCamera.lookAt(targetLookAt);
+    const targetRotation = tempCamera.quaternion.clone();
+
+    // Position tween
+    new TWEEN.Tween(startPosition)
+        .to(targetPosition, duration)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .onUpdate(() => camera.position.copy(startPosition))
+        .start();
+
+    // Rotation tween
+    new TWEEN.Tween(startRotation)
+        .to(targetRotation, duration)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .onUpdate(() => camera.quaternion.copy(startRotation))
+        .start();
+
+    // Update controls target
+    new TWEEN.Tween(controls.target)
+        .to(targetLookAt, duration)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .start();
+}
+
+// Function to load and move to optimized marker position
+async function goToOptimizedMarker(markerName) {
+    try {
+        const response = await fetch(`optimized_markers/${markerName}.json`);
+        if (!response.ok) throw new Error('Failed to load marker data');
+        
+        const markerData = await response.json();
+        const targetPosition = new THREE.Vector3(
+            parseFloat(markerData.camera.x),
+            parseFloat(markerData.camera.y),
+            parseFloat(markerData.camera.z)
+        );
+        const targetLookAt = new THREE.Vector3(
+            parseFloat(markerData.target.x),
+            parseFloat(markerData.target.y),
+            parseFloat(markerData.target.z)
+        );
+
+        moveCamera(targetPosition, targetLookAt);
+    } catch (error) {
+        console.error('Error loading marker:', error);
+    }
+}
+
+// District selection handler
+window.selectDistrict = (district) => {
+    const markerMap = {
+        'innerHarbor': 'marker_baltimore_inner_harbor_1735995279779',
+        'canton': 'marker_canton_1735995578767',
+        'fellsPoint': 'marker_fells_point_1735995790884',
+        'federalHill': 'marker_federal_hill_1735995980501',
+        'mountVernon': 'marker_mount_vernon_1735996124326'
+    };
+
+    const markerName = markerMap[district];
+    if (markerName) {
+        goToOptimizedMarker(markerName);
+    }
+};
+
+// Page selection handler
+window.showPage = (page) => {
+    const markerMap = {
+        'aboutUs': 'marker_about_us_1735994495867',
+        'medicalPatient': 'marker_medical_patient_1735994718056',
+        'partnerWithUs': 'marker_partner_with_us_1735994991665',
+        'deliveryDriver': 'marker_delivery_driver_1735995071394'
+    };
+
+    const markerName = markerMap[page];
+    if (markerName) {
+        goToOptimizedMarker(markerName);
+    }
+};
+
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
