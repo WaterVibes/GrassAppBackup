@@ -1067,10 +1067,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Start with panel collapsed
-    if (navPanel) {
-        navPanel.classList.add('collapsed');
-    }
+    // Don't start with panel collapsed
+    // Removed: if (navPanel) { navPanel.classList.add('collapsed'); }
 });
 
 // Remove any hover-based expansion
@@ -1134,12 +1132,13 @@ try {
                         // Small delay before showing to ensure loading screen is gone
                         requestAnimationFrame(() => {
                             navPanel.classList.add('visible');
+                            // Don't add collapsed class so panel starts expanded
                         });
                     }
                     if (topLogo) {
                         topLogo.classList.add('visible');
                     }
-                }, 1000); // Increased delay to ensure loading screen has faded out
+                }, 1000);
             }
         },
         (progress) => {
