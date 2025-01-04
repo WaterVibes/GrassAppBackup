@@ -181,9 +181,11 @@ function isMobileDevice() {
 
 // Function to constrain camera position
 function constrainCamera() {
-    const maxRadius = 1200;  // Reduced from 1500 to keep within fog boundaries
-    const minHeight = 200;   // Increased minimum height to prevent clipping
-    const maxHeight = 1000;  // Increased maximum height for better overview
+    if (isInFreeRoam) return; // Skip constraints in free roam mode
+
+    const maxRadius = 1200;
+    const minHeight = 200;
+    const maxHeight = 1000;
 
     const pos = camera.position.clone();
     const horizontalDist = Math.sqrt(pos.x * pos.x + pos.z * pos.z);
@@ -195,24 +197,24 @@ function constrainCamera() {
         pos.z = maxRadius * Math.sin(angle);
     }
     
-    // Constrain vertical movement with smooth transition near boundaries
+    // Constrain vertical movement
     if (pos.y < minHeight + 100) {
-        pos.y = minHeight + (pos.y - minHeight) * 0.5;  // Smooth transition near ground
+        pos.y = minHeight + (pos.y - minHeight) * 0.5;
     } else if (pos.y > maxHeight - 100) {
-        pos.y = maxHeight - (maxHeight - pos.y) * 0.5;  // Smooth transition near ceiling
+        pos.y = maxHeight - (maxHeight - pos.y) * 0.5;
     }
     
     // Additional constraints for diagonal movement
-    const minAngle = Math.PI / 6;  // 30 degrees
-    const maxAngle = Math.PI / 2.1; // About 85 degrees
+    const minAngle = Math.PI / 6;
+    const maxAngle = Math.PI / 2.1;
     
     const currentAngle = Math.atan2(pos.y, horizontalDist);
     if (currentAngle < minAngle) {
         const targetY = horizontalDist * Math.tan(minAngle);
-        pos.y = pos.y * 0.8 + targetY * 0.2;  // Smooth transition
+        pos.y = pos.y * 0.8 + targetY * 0.2;
     } else if (currentAngle > maxAngle) {
         const targetY = horizontalDist * Math.tan(maxAngle);
-        pos.y = pos.y * 0.8 + targetY * 0.2;  // Smooth transition
+        pos.y = pos.y * 0.8 + targetY * 0.2;
     }
     
     camera.position.copy(pos);
@@ -1269,18 +1271,48 @@ let markerName = '';
 
 // Add free roam camera functions
 function enableFreeRoamCamera() {
-    // Enable orbit controls for free movement
+    isInFreeRoam = true;
+    // Remove all constraints for free movement
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.screenSpacePanning = true;
     controls.enablePan = true;
     controls.enableZoom = true;
     controls.enableRotate = true;
-    controls.maxPolarAngle = Math.PI; // Allow full vertical rotation
+    controls.maxPolarAngle = Math.PI; // Full vertical rotation
     controls.minPolarAngle = 0;
-    controls.maxDistance = 2000;
-    controls.minDistance = 10;
+    controls.maxDistance = Infinity;
+    controls.minDistance = 0;
+    controls.maxAzimuthAngle = Infinity;
+    controls.minAzimuthAngle = -Infinity;
 }
+
+// Add function to restore normal camera constraints
+function restoreNormalCamera() {
+    isInFreeRoam = false;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.screenSpacePanning = false;
+    controls.enablePan = true;
+    controls.panSpeed = isMobileDevice() ? 0.3 : 0.5;
+    controls.minDistance = isMobileDevice() ? 50 : 100;
+    controls.maxDistance = isMobileDevice() ? 1000 : 1500;
+    controls.maxPolarAngle = Math.PI / 2.1;
+    controls.minPolarAngle = Math.PI / 6;
+}
+
+// Update free roam button
+freeRoamButton.onclick = () => {
+    if (!isInFreeRoam) {
+        enableFreeRoamCamera();
+        freeRoamButton.textContent = 'Exit Free Roam';
+        freeRoamButton.style.background = 'rgba(0, 255, 0, 0.2)';
+    } else {
+        restoreNormalCamera();
+        freeRoamButton.textContent = 'Toggle Free Roam';
+        freeRoamButton.style.background = 'rgba(0, 0, 0, 0.8)';
+    }
+};
 
 // Function to create visible markers
 function createVisibleMarker(position, color) {
@@ -1316,6 +1348,12 @@ function saveMarkerPositions() {
         return;
     }
 
+    // Temporarily disable constraints if not in free roam
+    const wasInFreeRoam = isInFreeRoam;
+    if (!wasInFreeRoam) {
+        enableFreeRoamCamera();
+    }
+
     const markerData = {
         camera: {
             x: currentCameraMarker.position.x.toFixed(2),
@@ -1340,6 +1378,11 @@ function saveMarkerPositions() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+    // Restore constraints if they were enabled before
+    if (!wasInFreeRoam) {
+        restoreNormalCamera();
+    }
 
     console.log('Marker positions saved:', markerData);
 }
@@ -1441,9 +1484,15 @@ freeRoamButton.style.cssText = `
 `;
 
 freeRoamButton.onclick = () => {
-    enableFreeRoamCamera();
-    freeRoamButton.textContent = 'Free Roam Enabled';
-    freeRoamButton.style.background = 'rgba(0, 255, 0, 0.2)';
+    if (!isInFreeRoam) {
+        enableFreeRoamCamera();
+        freeRoamButton.textContent = 'Exit Free Roam';
+        freeRoamButton.style.background = 'rgba(0, 255, 0, 0.2)';
+    } else {
+        restoreNormalCamera();
+        freeRoamButton.textContent = 'Toggle Free Roam';
+        freeRoamButton.style.background = 'rgba(0, 0, 0, 0.8)';
+    }
 };
 
 document.body.appendChild(freeRoamButton);
