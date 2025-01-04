@@ -762,85 +762,22 @@ function removeExistingInfoCard() {
     }
 }
 
-// Update showPageImpl to show info card after camera movement
-async function showPageImpl(pageName) {
-    console.log('Looking for page:', pageName);
-    const page = pages.find(p => p.name === pageName);
-    if (!page) {
-        console.error('Page not found:', pageName);
-        return;
-    }
+// Add state tracking for first selection
+let hasFirstSelection = false;
 
-    try {
-        const cameraData = await loadMarkerData(page.cameraFile);
-        if (!cameraData) {
-            console.error('Camera data not found for page:', pageName);
-            return;
-        }
-
-        // Create camera position and target vectors
-        const targetPos = new THREE.Vector3(
-            parseFloat(cameraData.target.x),
-            parseFloat(cameraData.target.y),
-            parseFloat(cameraData.target.z)
-        );
-        const cameraPos = new THREE.Vector3(
-            parseFloat(cameraData.camera.x),
-            parseFloat(cameraData.camera.y),
-            parseFloat(cameraData.camera.z)
-        );
-
-        // Smooth transition for pages with transparency
-        new TWEEN.Tween(camera.position)
-            .to(cameraPos, 1500)
-            .easing(TWEEN.Easing.Cubic.InOut)
-            .start();
-
-        new TWEEN.Tween(controls.target)
-            .to(targetPos, 1500)
-            .easing(TWEEN.Easing.Cubic.InOut)
-            .start();
-
-        // Add a slight fade effect during transition
-        const overlay = document.createElement('div');
-        overlay.style.position = 'fixed';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100%';
-        overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
-        overlay.style.pointerEvents = 'none';
-        overlay.style.transition = 'opacity 1.5s';
-        overlay.style.opacity = '0';
-        document.body.appendChild(overlay);
-
-        // Fade in
-        setTimeout(() => { overlay.style.opacity = '1'; }, 0);
-        // Fade out and remove
-        setTimeout(() => {
-            overlay.style.opacity = '0';
-            setTimeout(() => {
-                overlay.remove();
-                // Show info card after camera movement completes
-                showInfoCard(pageName);
-            }, 1500);
-        }, 750);
-
-    } catch (error) {
-        console.error('Error moving camera to page:', pageName, error);
-    }
-}
-
-// Update collapseNavPanel function for better mobile support
+// Update collapseNavPanel function for better behavior
 function collapseNavPanel() {
     const navPanel = document.querySelector('.nav-container');
     if (!navPanel) return;
+
+    // Start collapsed during loading
+    navPanel.classList.add('collapsed');
 
     // Add collapse button if it doesn't exist
     if (!document.querySelector('.nav-collapse-btn')) {
         const collapseBtn = document.createElement('button');
         collapseBtn.className = 'nav-collapse-btn';
-        collapseBtn.innerHTML = '◀';  // Left arrow
+        collapseBtn.innerHTML = '◀';
         collapseBtn.style.cssText = `
             position: absolute;
             right: -30px;
@@ -860,7 +797,7 @@ function collapseNavPanel() {
         navPanel.appendChild(collapseBtn);
     }
 
-    // Add CSS for panel animation with mobile-specific styles
+    // Add CSS for panel animation with hover behavior
     const style = document.createElement('style');
     style.textContent = `
         .nav-container {
@@ -874,6 +811,10 @@ function collapseNavPanel() {
         }
         .nav-container.collapsed {
             transform: translateX(-100%) !important;
+        }
+        .nav-container.collapsed:hover,
+        .nav-container.collapsed.touch-hover {
+            transform: translateX(0) !important;
         }
         .nav-container.collapsed .nav-collapse-btn {
             right: -30px;
@@ -898,9 +839,22 @@ function collapseNavPanel() {
     `;
     document.head.appendChild(style);
 
-    // Set initial state
+    // Add hover/touch behavior after first selection
     if (isMobileDevice()) {
-        navPanel.classList.add('collapsed');
+        let touchTimeout;
+        navPanel.addEventListener('touchstart', () => {
+            if (hasFirstSelection && navPanel.classList.contains('collapsed')) {
+                clearTimeout(touchTimeout);
+                navPanel.classList.add('touch-hover');
+            }
+        });
+        navPanel.addEventListener('touchend', () => {
+            if (hasFirstSelection) {
+                touchTimeout = setTimeout(() => {
+                    navPanel.classList.remove('touch-hover');
+                }, 2000);
+            }
+        });
     }
 }
 
@@ -1021,6 +975,12 @@ try {
             controls.minDistance = 100;
             
             createAllMarkers();
+            
+            // Expand nav panel after loading
+            const navPanel = document.querySelector('.nav-container');
+            if (navPanel) {
+                navPanel.classList.remove('collapsed');
+            }
             
             if (loadingScreen) {
                 loadingScreen.classList.add('hidden');
