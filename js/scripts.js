@@ -495,9 +495,8 @@ const pageContent = {
     }
 };
 
-// Update showInfoCard function with improved swipe handling
+// Update showInfoCard function with better layout and content formatting
 function showInfoCard(pageName) {
-    // Remove any existing info cards first
     removeExistingInfoCard();
 
     const pageInfo = pageContent[pageName];
@@ -506,83 +505,112 @@ function showInfoCard(pageName) {
     const cardInfo = pageInfo.cards[currentCardIndex];
     const isMobile = isMobileDevice();
 
-    // Create card container with wider dimensions
     const card = document.createElement('div');
     card.className = 'info-card';
     
     card.style.cssText = `
         position: fixed;
         ${isMobile ? 'bottom: -100%;' : 'top: 50%'};
-        ${isMobile ? 'left: 2.5%; width: 95%;' : 'left: 50%; width: 600px'};  // Increased width
-        transform: ${isMobile ? 'none' : 'translate(-50%, -50%)'};
-        background: rgba(0, 0, 0, 0.9);
+        left: 50%;
+        width: ${isMobile ? '90%' : '700px'};
+        transform: ${isMobile ? 'translateX(-50%)' : 'translate(-50%, -50%)'};
+        background: rgba(0, 0, 0, 0.95);
         backdrop-filter: blur(10px);
         border-radius: ${isMobile ? '20px 20px 0 0' : '20px'};
-        padding: ${isMobile ? '25px' : '30px'};  // Increased padding
+        padding: ${isMobile ? '20px' : '30px'};
         color: white;
-        box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
         border: 1px solid rgba(0, 255, 0, 0.2);
         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 1000;
         opacity: 0;
-        max-height: ${isMobile ? '80vh' : '80vh'};
+        max-height: ${isMobile ? '85vh' : '80vh'};
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 255, 0, 0.5) rgba(0, 0, 0, 0.1);
     `;
 
-    // Create icon with adjusted size for mobile
+    // Add custom scrollbar styles
+    const scrollbarStyles = document.createElement('style');
+    scrollbarStyles.textContent = `
+        .info-card::-webkit-scrollbar {
+            width: 6px;
+        }
+        .info-card::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+        }
+        .info-card::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 0, 0.5);
+            border-radius: 3px;
+        }
+    `;
+    document.head.appendChild(scrollbarStyles);
+
+    // Create icon
     const icon = document.createElement('div');
     icon.className = 'card-icon';
     icon.textContent = cardInfo.icon;
     icon.style.cssText = `
-        font-size: ${isMobile ? '42px' : '48px'};
-        margin-bottom: ${isMobile ? '15px' : '20px'};
-        animation: floatIcon 3s ease-in-out infinite;
+        font-size: ${isMobile ? '48px' : '56px'};
+        margin-bottom: 20px;
         text-align: center;
+        animation: floatIcon 3s ease-in-out infinite;
     `;
 
-    // Create title with adjusted size for mobile
+    // Create title
     const title = document.createElement('h2');
     title.textContent = cardInfo.title;
     title.style.cssText = `
-        font-size: ${isMobile ? '22px' : '24px'};
-        margin-bottom: ${isMobile ? '15px' : '20px'};
+        font-size: ${isMobile ? '24px' : '28px'};
+        margin-bottom: 20px;
         color: #00ff00;
         font-weight: bold;
-        text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
         text-align: center;
+        text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        padding: 0 20px;
     `;
 
-    // Create content with adjusted size for mobile
-    const content = document.createElement('p');
-    content.textContent = cardInfo.content;
+    // Create content with proper formatting
+    const content = document.createElement('div');
     content.style.cssText = `
-        font-size: ${isMobile ? '16px' : '16px'};
+        font-size: ${isMobile ? '16px' : '18px'};
         line-height: 1.8;
-        margin-bottom: ${isMobile ? '20px' : '25px'};
+        margin-bottom: 25px;
         color: rgba(255, 255, 255, 0.95);
-        text-align: justify;
-        padding: 0 10px;
+        text-align: left;
+        padding: 0 ${isMobile ? '15px' : '25px'};
     `;
 
-    // Add link or contact if available with mobile-optimized styles
+    // Split content by newlines and create paragraphs
+    cardInfo.content.split('\n').forEach(paragraph => {
+        if (paragraph.trim()) {
+            const p = document.createElement('p');
+            p.textContent = paragraph;
+            p.style.marginBottom = '15px';
+            content.appendChild(p);
+        }
+    });
+
+    // Add link or contact if available
     if (cardInfo.link || cardInfo.contact) {
         const link = document.createElement('a');
         link.href = cardInfo.link || `mailto:${cardInfo.contact}`;
         link.textContent = cardInfo.link ? 'Register Now' : 'Contact Us';
         link.target = '_blank';
         link.style.cssText = `
-            display: block;  // Changed to block for full width on mobile
-            width: ${isMobile ? '80%' : 'auto'};  // Control width on mobile
-            margin: ${isMobile ? '0 auto' : '0'};  // Center on mobile
-            padding: ${isMobile ? '12px 0' : '10px 20px'};  // Adjusted padding
+            display: block;
+            width: ${isMobile ? '85%' : '200px'};
+            margin: 30px auto;
+            padding: 15px 0;
             background: linear-gradient(45deg, #00ff00, #00cc00);
             color: black;
             text-decoration: none;
             border-radius: 25px;
             font-weight: bold;
             text-align: center;
-            font-size: ${isMobile ? '16px' : '16px'};  // Increased from 14px
+            font-size: ${isMobile ? '16px' : '18px'};
             transition: all 0.3s ease;
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
         `;
@@ -594,37 +622,72 @@ function showInfoCard(pageName) {
             link.style.transform = 'scale(1)';
             link.style.boxShadow = '0 0 15px rgba(0, 255, 0, 0.3)';
         };
-        card.appendChild(link);
+        content.appendChild(link);
     }
 
-    // Add close button with mobile-optimized position
+    // Add close button
     const closeBtn = document.createElement('button');
-    closeBtn.textContent = isMobile ? 'Close' : '×';
+    closeBtn.textContent = '×';
     closeBtn.style.cssText = `
         position: absolute;
-        ${isMobile ? 'bottom: 15px;' : 'top: 15px;'}  // Increased from 10px
-        ${isMobile ? 'left: 50%;' : 'right: 15px;'}
-        ${isMobile ? 'transform: translateX(-50%);' : ''}
-        background: ${isMobile ? 'linear-gradient(45deg, #00ff00, #00cc00)' : 'none'};
+        top: 15px;
+        right: 15px;
+        background: none;
         border: none;
-        color: ${isMobile ? 'black' : 'white'};
-        font-size: ${isMobile ? '16px' : '24px'};
+        color: #00ff00;
+        font-size: 28px;
         cursor: pointer;
-        padding: ${isMobile ? '12px 30px' : '0'};  // Increased padding
-        ${isMobile ? 'width: 140px;' : 'width: 30px; height: 30px;'}  // Increased width
-        border-radius: ${isMobile ? '25px' : '50%'};
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         transition: all 0.3s ease;
-        font-weight: bold;
+        z-index: 2;
     `;
+    closeBtn.onmouseover = () => closeBtn.style.transform = 'scale(1.1) rotate(90deg)';
+    closeBtn.onmouseout = () => closeBtn.style.transform = 'scale(1) rotate(0)';
     closeBtn.onclick = () => {
+        card.style.opacity = '0';
         if (isMobile) {
             card.style.bottom = '-100%';
-        } else {
-            card.style.right = '-400px';
         }
-        card.style.opacity = '0';
         setTimeout(() => card.remove(), 500);
     };
+
+    // Add navigation dots
+    if (pageInfo.cards.length > 1) {
+        const dotsContainer = document.createElement('div');
+        dotsContainer.style.cssText = `
+            position: absolute;
+            bottom: ${isMobile ? '25px' : '20px'};
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            padding: 10px;
+        `;
+
+        pageInfo.cards.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.style.cssText = `
+                width: ${isMobile ? '10px' : '8px'};
+                height: ${isMobile ? '10px' : '8px'};
+                border-radius: 50%;
+                background: ${index === currentCardIndex ? '#00ff00' : 'rgba(0, 255, 0, 0.3)'};
+                cursor: pointer;
+                transition: all 0.3s ease;
+            `;
+            dot.onclick = () => {
+                currentCardIndex = index;
+                showInfoCard(pageName);
+            };
+            dotsContainer.appendChild(dot);
+        });
+        card.appendChild(dotsContainer);
+    }
 
     // Assemble card
     card.appendChild(closeBtn);
@@ -632,113 +695,58 @@ function showInfoCard(pageName) {
     card.appendChild(title);
     card.appendChild(content);
 
-    // Add styles for animations
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes floatIcon {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        .info-card {
-            animation: glowPulse 2s infinite alternate;
-        }
-        @keyframes glowPulse {
-            0% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.2); }
-            100% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.4); }
-        }
-    `;
-    document.head.appendChild(style);
-
-    // Add card to document and animate it in
+    // Add to document and animate
     document.body.appendChild(card);
-    setTimeout(() => {
+    requestAnimationFrame(() => {
+        card.style.opacity = '1';
         if (isMobile) {
             card.style.bottom = '0';
         }
-        card.style.opacity = '1';
-    }, 100);
-
-    // Add navigation dots for multiple cards
-    const dotsContainer = document.createElement('div');
-    dotsContainer.style.cssText = `
-        position: absolute;
-        bottom: ${isMobile ? '60px' : '20px'};
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-    `;
-
-    pageInfo.cards.forEach((_, index) => {
-        const dot = document.createElement('div');
-        dot.style.cssText = `
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: ${index === currentCardIndex ? '#00ff00' : 'rgba(0, 255, 0, 0.3)'};
-            cursor: pointer;
-            transition: all 0.3s ease;
-        `;
-        dot.onclick = () => {
-            currentCardIndex = index;
-            showInfoCard(pageName);
-        };
-        dotsContainer.appendChild(dot);
     });
 
-    card.appendChild(dotsContainer);
+    // Add swipe handling for mobile
+    if (isMobile) {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let isSwiping = false;
 
-    // Improved swipe navigation for mobile
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let isSwiping = false;
+        card.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            isSwiping = false;
+        }, { passive: true });
 
-    card.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-        isSwiping = false;
-    }, { passive: true });
+        card.addEventListener('touchmove', (e) => {
+            if (!isSwiping) {
+                const touchMoveX = e.touches[0].clientX;
+                const touchMoveY = e.touches[0].clientY;
+                const deltaX = Math.abs(touchMoveX - touchStartX);
+                const deltaY = Math.abs(touchMoveY - touchStartY);
 
-    card.addEventListener('touchmove', (e) => {
-        if (!isSwiping) {
-            const touchMoveX = e.touches[0].clientX;
-            const touchMoveY = e.touches[0].clientY;
-            const deltaX = Math.abs(touchMoveX - touchStartX);
-            const deltaY = Math.abs(touchMoveY - touchStartY);
-
-            // If horizontal swipe is more significant than vertical scroll
-            if (deltaX > deltaY && deltaX > 30) {
-                isSwiping = true;
-                e.preventDefault();
+                if (deltaX > deltaY && deltaX > 30) {
+                    isSwiping = true;
+                    e.preventDefault();
+                }
             }
-        }
-    }, { passive: false });
+        }, { passive: false });
 
-    card.addEventListener('touchend', (e) => {
-        if (!isSwiping) return;
+        card.addEventListener('touchend', (e) => {
+            if (!isSwiping) return;
 
-        const touchEndX = e.changedTouches[0].clientX;
-        const diff = touchStartX - touchEndX;
-        const swipeThreshold = 50;  // Minimum swipe distance
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            const swipeThreshold = 50;
 
-        if (Math.abs(diff) > swipeThreshold) {
-            if (diff > 0 && currentCardIndex < pageInfo.cards.length - 1) {
-                // Swipe left - next card
-                currentCardIndex++;
-                showInfoCard(pageName);
-            } else if (diff < 0 && currentCardIndex > 0) {
-                // Swipe right - previous card
-                currentCardIndex--;
-                showInfoCard(pageName);
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0 && currentCardIndex < pageInfo.cards.length - 1) {
+                    currentCardIndex++;
+                    showInfoCard(pageName);
+                } else if (diff < 0 && currentCardIndex > 0) {
+                    currentCardIndex--;
+                    showInfoCard(pageName);
+                }
             }
-        }
-    }, { passive: true });
-
-    // Reset card index when changing pages
-    if (card.dataset.pageName !== pageName) {
-        currentCardIndex = 0;
-        card.dataset.pageName = pageName;
+        }, { passive: true });
     }
 }
 
