@@ -3,47 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrassApp - Baltimore's Community-Focused Cannabis Delivery</title>
+    <title>Baltimore City Explorer</title>
     <link rel="stylesheet" href="css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
-            "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/",
-            "three/examples/jsm/controls/OrbitControls.js": "https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js",
-            "three/examples/jsm/loaders/GLTFLoader.js": "https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js",
-            "three/examples/jsm/loaders/DRACOLoader.js": "https://unpkg.com/three@0.158.0/examples/jsm/loaders/DRACOLoader.js",
-            "three/examples/jsm/renderers/CSS2DRenderer.js": "https://unpkg.com/three@0.158.0/examples/jsm/renderers/CSS2DRenderer.js",
-            "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@21.0.0/dist/tween.esm.js"
-        }
-    }
-    </script>
 </head>
 <body>
-    <!-- Loading Screen -->
     <div class="loading-screen">
-        <div class="loading-content">
-            <img src="img/GrassAppLogo.png" alt="GrassApp Logo" class="logo">
+        <div class="loading-container">
             <div class="loading-bar">
                 <div class="loading-progress"></div>
             </div>
         </div>
     </div>
 
-    <!-- Error Screen -->
     <div class="error-screen hidden">
-        <div class="error-content">
+        <div class="error-container">
             <h2>Error</h2>
-            <div class="error-message"></div>
-            <div class="error-details"></div>
-            <button onclick="location.reload()">Reload Page</button>
+            <p class="error-message"></p>
+            <p class="error-details"></p>
         </div>
     </div>
 
-    <!-- Top Logo -->
     <div class="top-logo">
-        <img src="img/GrassAppLogo.png" alt="GrassApp Logo">
+        <img src="images/logo.png" alt="Baltimore City Explorer">
     </div>
 
     <script type="module" src="js/scripts.js"></script>

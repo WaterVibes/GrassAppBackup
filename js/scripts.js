@@ -1,5 +1,95 @@
-// Core Three.js setup and animation
-// ... existing code ...
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import * as TWEEN from '@tweenjs/tween.js';
+
+// Scene setup
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x000000, 2500, 3500);
+
+// Camera setup
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+camera.position.set(0, 500, 1000);
+
+// Renderer setup
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+// Label renderer setup
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(window.innerWidth, window.innerHeight);
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = '0px';
+document.body.appendChild(labelRenderer.domElement);
+
+// Controls setup
+const controls = new OrbitControls(camera, labelRenderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.screenSpacePanning = false;
+controls.minDistance = 100;
+controls.maxDistance = 2000;
+controls.maxPolarAngle = Math.PI / 2;
+
+// Lighting setup
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(1000, 1000, 1000);
+directionalLight.castShadow = true;
+directionalLight.shadow.mapSize.width = 2048;
+directionalLight.shadow.mapSize.height = 2048;
+directionalLight.shadow.camera.near = 0.5;
+directionalLight.shadow.camera.far = 3500;
+directionalLight.shadow.camera.left = -1000;
+directionalLight.shadow.camera.right = 1000;
+directionalLight.shadow.camera.top = 1000;
+directionalLight.shadow.camera.bottom = -1000;
+scene.add(directionalLight);
+
+// Loading manager
+const loadingManager = new THREE.LoadingManager();
+const loadingScreen = document.querySelector('.loading-screen');
+const progressBar = document.querySelector('.loading-progress');
+
+loadingManager.onProgress = (url, loaded, total) => {
+    const progress = (loaded / total) * 100;
+    progressBar.style.width = progress + '%';
+};
+
+loadingManager.onLoad = () => {
+    loadingScreen.classList.add('hidden');
+    document.querySelector('.top-logo').classList.add('visible');
+};
+
+// Model loader setup
+const dracoLoader = new DRACOLoader(loadingManager);
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+
+const gltfLoader = new GLTFLoader(loadingManager);
+gltfLoader.setDRACOLoader(dracoLoader);
+
+// Load city model
+gltfLoader.load('models/baltimore.glb', (gltf) => {
+    const model = gltf.scene;
+    model.traverse((child) => {
+        if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+        }
+    });
+    scene.add(model);
+}, undefined, (error) => {
+    console.error('Error loading model:', error);
+    showError('Failed to load the city model', error);
+});
 
 // MarkerSystem class - core functionality only
 class MarkerSystem {
@@ -61,6 +151,38 @@ function moveToDistrict(districtId) {
         console.error('Could not find markers for district:', districtId);
     }
 }
+
+// Camera movement function
+function moveCamera(cameraPosition, targetPosition) {
+    new TWEEN.Tween(camera.position)
+        .to(cameraPosition, 2000)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .start();
+
+    new TWEEN.Tween(controls.target)
+        .to(targetPosition, 2000)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .start();
+}
+
+// Error handling
+function showError(message, details) {
+    const errorScreen = document.querySelector('.error-screen');
+    const errorMessage = document.querySelector('.error-message');
+    const errorDetails = document.querySelector('.error-details');
+    
+    errorMessage.textContent = message;
+    errorDetails.textContent = details;
+    errorScreen.classList.remove('hidden');
+}
+
+// Window resize handler
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
+});
 
 function animate() {
     requestAnimationFrame(animate);
@@ -126,6 +248,9 @@ function constrainCamera() {
     
     camera.position.copy(pos);
 }
+
+// Initialize marker system
+const markerSystem = new MarkerSystem();
 
 // Start animation loop
 animate(); 
