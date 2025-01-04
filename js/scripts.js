@@ -1257,4 +1257,194 @@ async function showPageImpl(pageName) {
     } catch (error) {
         console.error('Error moving camera to page:', pageName, error);
     }
-} 
+}
+
+// Add marker system variables
+let isPlacingCameraMarker = false;
+let isPlacingSubjectMarker = false;
+let currentCameraMarker = null;
+let currentSubjectMarker = null;
+let markerName = '';
+
+// Add free roam camera functions
+function enableFreeRoamCamera() {
+    // Enable orbit controls for free movement
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.screenSpacePanning = true;
+    controls.enablePan = true;
+    controls.enableZoom = true;
+    controls.enableRotate = true;
+    controls.maxPolarAngle = Math.PI; // Allow full vertical rotation
+    controls.minPolarAngle = 0;
+    controls.maxDistance = 2000;
+    controls.minDistance = 10;
+}
+
+// Function to create visible markers
+function createVisibleMarker(position, color) {
+    const geometry = new THREE.SphereGeometry(5, 16, 16);
+    const material = new THREE.MeshBasicMaterial({ color: color });
+    const marker = new THREE.Mesh(geometry, material);
+    marker.position.copy(position);
+    scene.add(marker);
+    return marker;
+}
+
+// Function to start camera marker placement
+function startCameraMarkerPlacement(name) {
+    isPlacingCameraMarker = true;
+    markerName = name;
+    console.log('Click to place camera marker');
+}
+
+// Function to start subject marker placement
+function startSubjectMarkerPlacement() {
+    if (!currentCameraMarker) {
+        console.log('Place camera marker first');
+        return;
+    }
+    isPlacingSubjectMarker = true;
+    console.log('Click to place subject marker');
+}
+
+// Function to save marker positions
+function saveMarkerPositions() {
+    if (!currentCameraMarker || !currentSubjectMarker) {
+        console.log('Both camera and subject markers must be placed');
+        return;
+    }
+
+    const markerData = {
+        camera: {
+            x: currentCameraMarker.position.x.toFixed(2),
+            y: currentCameraMarker.position.y.toFixed(2),
+            z: currentCameraMarker.position.z.toFixed(2)
+        },
+        subject: {
+            x: currentSubjectMarker.position.x.toFixed(2),
+            y: currentSubjectMarker.position.y.toFixed(2),
+            z: currentSubjectMarker.position.z.toFixed(2)
+        }
+    };
+
+    // Create a downloadable JSON file
+    const dataStr = JSON.stringify(markerData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `marker_${markerName}_${Date.now()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    console.log('Marker positions saved:', markerData);
+}
+
+// Add click event listener for marker placement
+renderer.domElement.addEventListener('click', (event) => {
+    if (!isPlacingCameraMarker && !isPlacingSubjectMarker) return;
+
+    const rect = renderer.domElement.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
+
+    const intersects = raycaster.intersectObjects(scene.children, true);
+    if (intersects.length > 0) {
+        const point = intersects[0].point;
+
+        if (isPlacingCameraMarker) {
+            if (currentCameraMarker) scene.remove(currentCameraMarker);
+            currentCameraMarker = createVisibleMarker(point, 0xff0000);
+            isPlacingCameraMarker = false;
+            console.log('Camera marker placed, now place subject marker');
+            startSubjectMarkerPlacement();
+        } else if (isPlacingSubjectMarker) {
+            if (currentSubjectMarker) scene.remove(currentSubjectMarker);
+            currentSubjectMarker = createVisibleMarker(point, 0x00ff00);
+            isPlacingSubjectMarker = false;
+            console.log('Subject marker placed, ready to save');
+            saveMarkerPositions();
+        }
+    }
+});
+
+// Add UI controls for marker system
+const markerControls = document.createElement('div');
+markerControls.style.cssText = `
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+`;
+
+const nameInput = document.createElement('input');
+nameInput.type = 'text';
+nameInput.placeholder = 'Marker name';
+nameInput.style.cssText = `
+    padding: 5px;
+    border-radius: 3px;
+    border: 1px solid #00ff00;
+    background: rgba(0, 0, 0, 0.8);
+    color: #00ff00;
+`;
+
+const placeButton = document.createElement('button');
+placeButton.textContent = 'Place Markers';
+placeButton.style.cssText = `
+    padding: 5px 10px;
+    border-radius: 3px;
+    border: 1px solid #00ff00;
+    background: rgba(0, 0, 0, 0.8);
+    color: #00ff00;
+    cursor: pointer;
+`;
+
+placeButton.onclick = () => {
+    if (!nameInput.value) {
+        alert('Please enter a marker name');
+        return;
+    }
+    startCameraMarkerPlacement(nameInput.value);
+};
+
+markerControls.appendChild(nameInput);
+markerControls.appendChild(placeButton);
+document.body.appendChild(markerControls);
+
+// Add free roam toggle
+const freeRoamButton = document.createElement('button');
+freeRoamButton.textContent = 'Toggle Free Roam';
+freeRoamButton.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 5px 10px;
+    border-radius: 3px;
+    border: 1px solid #00ff00;
+    background: rgba(0, 0, 0, 0.8);
+    color: #00ff00;
+    cursor: pointer;
+    z-index: 1000;
+`;
+
+freeRoamButton.onclick = () => {
+    enableFreeRoamCamera();
+    freeRoamButton.textContent = 'Free Roam Enabled';
+    freeRoamButton.style.background = 'rgba(0, 255, 0, 0.2)';
+};
+
+document.body.appendChild(freeRoamButton);
+
+// ... rest of existing code ... 
