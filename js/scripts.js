@@ -809,6 +809,7 @@ function collapseNavPanel() {
             padding: 20px;
             border-left: 1px solid #00ff00;
             box-shadow: -5px 0 15px rgba(0, 255, 0, 0.1);
+            width: 300px;
         }
         .nav-panel.collapsed {
             transform: translateX(calc(100% - 30px));
@@ -820,8 +821,17 @@ function collapseNavPanel() {
         .nav-panel.collapsed .nav-collapse-btn {
             transform: translateY(-50%) rotate(180deg);
         }
-        .nav-section .nav-button,
-        .pages-container button {
+        .nav-section {
+            margin-bottom: 20px;
+        }
+        .nav-section h3 {
+            color: #00ff00;
+            text-align: center;
+            margin: 20px 0 10px;
+            font-size: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .nav-button {
             background: transparent;
             border: 1px solid #00ff00;
             color: #00ff00;
@@ -832,17 +842,10 @@ function collapseNavPanel() {
             cursor: pointer;
             font-size: 16px;
             transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
         }
-        .nav-section .nav-button:hover,
-        .pages-container button:hover {
+        .nav-button:hover {
             background: rgba(0, 255, 0, 0.1);
-        }
-        .nav-section h2,
-        .pages-container h2 {
-            color: #00ff00;
-            text-align: center;
-            margin: 20px 0 10px;
-            font-size: 20px;
         }
         @media (max-width: 768px) {
             .nav-panel {
