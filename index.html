@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Interactive 3D map of Baltimore City showcasing GrassApp's cannabis delivery service">
     <meta name="theme-color" content="#000000">
@@ -43,10 +44,20 @@
             "three/examples/jsm/controls/OrbitControls": "https://unpkg.com/three@0.157.0/examples/jsm/controls/OrbitControls.js",
             "three/examples/jsm/loaders/GLTFLoader": "https://unpkg.com/three@0.157.0/examples/jsm/loaders/GLTFLoader.js",
             "three/examples/jsm/loaders/DRACOLoader": "https://unpkg.com/three@0.157.0/examples/jsm/loaders/DRACOLoader.js",
+=======
+    <title>GrassApp - Baltimore's Community-Focused Cannabis Delivery</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
             "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@21.0.0/dist/tween.esm.js"
         }
     }
     </script>
+<<<<<<< HEAD
     
     <!-- Preload critical resources -->
     <link rel="preload" href="css/styles.css" as="style">
@@ -68,12 +79,21 @@
             <div class="loading-logo">
                 <img src="/img/GrassAppLogo.png" alt="GrassApp Logo" />
             </div>
+=======
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="loading-content">
+            <img src="assets/logo.png" alt="GrassApp Logo" class="logo">
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
             <div class="loading-bar">
                 <div class="loading-progress"></div>
             </div>
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Error Fallback -->
     <div id="error-fallback" class="error-overlay hidden">
         <div class="error-content">
@@ -81,11 +101,21 @@
             <p class="error-message"></p>
             <pre class="error-details"></pre>
             <button onclick="location.reload()">Retry</button>
+=======
+    <!-- Error Screen -->
+    <div class="error-screen hidden">
+        <div class="error-content">
+            <h2>Error</h2>
+            <div class="error-message"></div>
+            <div class="error-details"></div>
+            <button onclick="location.reload()">Reload Page</button>
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
         </div>
     </div>
 
     <!-- Navigation Panel -->
     <div class="nav-panel">
+<<<<<<< HEAD
         <div class="nav-section">
             <h3>Districts</h3>
             <div id="districtButtons" class="button-container"></div>
@@ -93,10 +123,35 @@
         <div class="nav-section">
             <h3>Pages</h3>
             <div id="pageButtons" class="button-container"></div>
+=======
+        <!-- Districts Section -->
+        <div class="nav-section">
+            <h3>Districts</h3>
+            <div class="button-container">
+                <button class="nav-button" onclick="selectDistrict('centralBaltimore')">Central Baltimore</button>
+                <button class="nav-button" onclick="selectDistrict('eastBaltimore')">East Baltimore</button>
+                <button class="nav-button" onclick="selectDistrict('westBaltimore')">West Baltimore</button>
+                <button class="nav-button" onclick="selectDistrict('southBaltimore')">South Baltimore</button>
+                <button class="nav-button" onclick="selectDistrict('northBaltimore')">North Baltimore</button>
+            </div>
+        </div>
+
+        <!-- Pages Section -->
+        <div class="nav-section">
+            <h3>Pages</h3>
+            <div class="button-container">
+                <button class="nav-button" onclick="showInfoCards('about')">About Us</button>
+                <button class="nav-button" onclick="showInfoCards('medical')">Medical Patient</button>
+                <button class="nav-button" onclick="showInfoCards('partner')">Partner With Us</button>
+                <button class="nav-button" onclick="showInfoCards('driver')">Delivery Driver</button>
+                <button class="nav-button" onclick="window.location.href='mailto:contact@grassapp.com'">Contact Us</button>
+            </div>
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
         </div>
     </div>
 
     <!-- Info Cards Overlay -->
+<<<<<<< HEAD
     <div id="info-overlay" class="info-overlay hidden">
         <div class="info-content">
             <!-- About Us Cards -->
@@ -153,10 +208,59 @@
                         <a href="mailto:contact@thegrassapp.com" class="contact-button">
                             <span class="button-icon">✉️</span>
                             contact@thegrassapp.com
+=======
+    <div class="info-overlay hidden">
+        <div class="info-content">
+            <!-- About Us Cards -->
+            <div class="info-cards about-cards hidden">
+                <button class="close-button" onclick="hideInfoCards()">×</button>
+                <div class="cards-grid">
+                    <div class="info-card intro-card">
+                        <div class="card-icon">🌿</div>
+                        <h2>Welcome to GrassApp</h2>
+                        <p>Baltimore's first community-focused cannabis delivery platform, bringing quality products directly to your door.</p>
+                        <div class="card-accent"></div>
+                    </div>
+                    <div class="info-card mission-card">
+                        <div class="card-icon">🎯</div>
+                        <h2>Our Mission</h2>
+                        <p>To provide safe, reliable, and convenient access to medical cannabis while fostering community growth and economic opportunities.</p>
+                        <div class="card-accent"></div>
+                    </div>
+                    <div class="info-card features-card">
+                        <div class="card-icon">✨</div>
+                        <h2>What We Offer</h2>
+                        <ul class="feature-list">
+                            <li><span class="feature-icon">🔒</span>Fast, discreet delivery</li>
+                            <li><span class="feature-icon">🌿</span>Quality-verified products</li>
+                            <li><span class="feature-icon">💳</span>Secure transactions</li>
+                            <li><span class="feature-icon">🤝</span>Community support</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+                    <div class="info-card values-card">
+                        <div class="card-icon">💚</div>
+                        <h2>Our Values</h2>
+                        <ul class="values-list">
+                            <li><span class="value-icon">🤝</span>Community First</li>
+                            <li><span class="value-icon">🔒</span>Safety & Security</li>
+                            <li><span class="value-icon">📈</span>Local Growth</li>
+                            <li><span class="value-icon">🤲</span>Accessibility</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+                    <div class="info-card contact-card">
+                        <div class="card-icon">📧</div>
+                        <h2>Get in Touch</h2>
+                        <p>Have questions? We're here to help!</p>
+                        <a href="mailto:contact@grassapp.com" class="contact-button">
+                            <span>Contact Us</span>
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
                         </a>
                         <div class="card-accent"></div>
                     </div>
                 </div>
+<<<<<<< HEAD
                 <button class="close-button">×</button>
             </div>
 
@@ -231,10 +335,47 @@
                            class="register-button pulse">
                             <span class="button-icon">📱</span>
                             Register via OneStop
+=======
+            </div>
+
+            <!-- Medical Patient Cards -->
+            <div class="info-cards medical-cards hidden">
+                <button class="close-button" onclick="hideInfoCards()">×</button>
+                <div class="cards-grid">
+                    <div class="info-card medical-benefits-card">
+                        <div class="card-icon">🏥</div>
+                        <h2>Benefits of Medical Cannabis</h2>
+                        <ul class="medical-list">
+                            <li><span class="medical-icon">💊</span>Pain Management</li>
+                            <li><span class="medical-icon">😌</span>Anxiety Relief</li>
+                            <li><span class="medical-icon">😴</span>Sleep Improvement</li>
+                            <li><span class="medical-icon">🤢</span>Nausea Control</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+                    <div class="info-card medical-steps-card">
+                        <div class="card-icon">📝</div>
+                        <h2>Getting Your Card</h2>
+                        <ul class="medical-list">
+                            <li><span class="medical-icon">1️⃣</span>Register with MMCC</li>
+                            <li><span class="medical-icon">2️⃣</span>Get certified by a doctor</li>
+                            <li><span class="medical-icon">3️⃣</span>Receive your card</li>
+                            <li><span class="medical-icon">4️⃣</span>Start ordering!</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+                    <div class="info-card medical-register-card">
+                        <div class="card-icon">📱</div>
+                        <h2>Ready to Register?</h2>
+                        <p>Start your journey to wellness today!</p>
+                        <a href="https://mmcc.maryland.gov/Pages/home.aspx" target="_blank" class="register-button pulse">
+                            Register with MMCC
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
                         </a>
                         <div class="card-accent"></div>
                     </div>
                 </div>
+<<<<<<< HEAD
                 <button class="close-button">×</button>
             </div>
 
@@ -278,16 +419,95 @@
                                class="driver-button">
                                 <span class="button-icon">✉️</span>
                                 Contact Us
+=======
+            </div>
+
+            <!-- Partner Cards -->
+            <div class="info-cards partner-cards hidden">
+                <button class="close-button" onclick="hideInfoCards()">×</button>
+                <div class="cards-grid">
+                    <div class="info-card partner-why-card">
+                        <div class="card-icon">🤝</div>
+                        <h2>Why Partner With Us?</h2>
+                        <ul class="partner-list">
+                            <li><span class="partner-icon">📈</span>Expand your reach</li>
+                            <li><span class="partner-icon">💰</span>Increase revenue</li>
+                            <li><span class="partner-icon">🚚</span>Efficient delivery</li>
+                            <li><span class="partner-icon">📱</span>Tech-driven platform</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+                    <div class="info-card partner-how-card">
+                        <div class="card-icon">🔄</div>
+                        <h2>How It Works</h2>
+                        <ul class="partner-list">
+                            <li><span class="partner-icon">1️⃣</span>Apply to partner</li>
+                            <li><span class="partner-icon">2️⃣</span>Complete verification</li>
+                            <li><span class="partner-icon">3️⃣</span>Set up your menu</li>
+                            <li><span class="partner-icon">4️⃣</span>Start receiving orders</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+                    <div class="info-card partner-contact-card">
+                        <div class="card-icon">🌟</div>
+                        <h2>Join Our Network</h2>
+                        <p>Ready to grow together?</p>
+                        <a href="mailto:partners@grassapp.com" class="partner-button pulse">
+                            Partner With Us
+                        </a>
+                        <div class="card-accent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Driver Cards -->
+            <div class="info-cards driver-cards hidden">
+                <button class="close-button" onclick="hideInfoCards()">×</button>
+                <div class="cards-grid">
+                    <div class="info-card driver-opportunity-card">
+                        <div class="card-icon">💼</div>
+                        <h2>Driver Opportunities</h2>
+                        <ul class="driver-list">
+                            <li><span class="driver-icon">💰</span>Competitive pay</li>
+                            <li><span class="driver-icon">⏰</span>Flexible hours</li>
+                            <li><span class="driver-icon">📱</span>User-friendly app</li>
+                            <li><span class="driver-icon">🌱</span>Growth potential</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+                    <div class="info-card driver-requirements-card">
+                        <div class="card-icon">📋</div>
+                        <h2>Requirements</h2>
+                        <ul class="driver-list">
+                            <li><span class="driver-icon">🚗</span>Valid driver's license</li>
+                            <li><span class="driver-icon">📱</span>Smartphone</li>
+                            <li><span class="driver-icon">✅</span>Clean background</li>
+                            <li><span class="driver-icon">🔒</span>Vehicle insurance</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+                    <div class="info-card driver-register-card">
+                        <div class="card-icon">🚗</div>
+                        <h2>Start Driving</h2>
+                        <p>Join our team of professional drivers!</p>
+                        <div class="driver-buttons">
+                            <a href="mailto:drivers@grassapp.com" class="driver-button pulse">
+                                Apply Now
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
                             </a>
                         </div>
                         <div class="card-accent"></div>
                     </div>
                 </div>
+<<<<<<< HEAD
                 <button class="close-button">×</button>
+=======
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
             </div>
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Logo -->
     <div id="corner-logo" class="corner-logo hidden">
         <img src="/img/GrassAppLogo.png" alt="GrassApp Logo" width="100" height="100">
@@ -314,5 +534,13 @@
     </script>
 </body>
 </html> 
+=======
+    <!-- Corner Logo -->
+    <div class="corner-logo">
+        <img src="assets/logo.png" alt="GrassApp Logo">
+    </div>
+
+    <script type="module" src="js/scripts.js"></script>
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 </body>
 </html> 

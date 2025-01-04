@@ -1,0 +1,847 @@
+/* Global styles */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    font-family: Arial, sans-serif;
+}
+
+canvas {
+    display: block;
+    width: 100vw !important;
+    height: 100vh !important;
+    touch-action: none; /* Prevents default touch behaviors on mobile */
+}
+
+/* Ensure proper sizing on iOS */
+@supports (-webkit-touch-callout: none) {
+    canvas {
+        height: -webkit-fill-available !important;
+    }
+}
+
+/* Loading screen */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-content {
+    text-align: center;
+    color: white;
+}
+
+.logo {
+    width: 200px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.loading-bar {
+    width: 200px;
+    height: 4px;
+    background: #333;
+    margin: 20px auto;
+    border-radius: 2px;
+}
+
+.loading-progress {
+    width: 0%;
+    height: 100%;
+    background: #4CAF50;
+    border-radius: 2px;
+    transition: width 0.3s ease-in-out;
+}
+
+/* Error overlay */
+.error-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.error-screen.hidden {
+    display: none;
+}
+
+.error-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.error-content h2 {
+    color: #ff3333;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.error-details {
+    font-family: monospace;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    word-wrap: break-word;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Navigation Panel */
+.nav-panel {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 100;
+    width: 250px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.nav-panel h2 {
+    margin: 0 0 15px 0;
+    font-size: 1.2em;
+}
+
+.district-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.district-item {
+    padding: 8px 12px;
+    margin: 4px 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.district-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.district-item.active {
+    background: #4CAF50;
+}
+
+.marker {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #4CAF50;
+    border-radius: 50%;
+    border: 2px solid white;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s, background 0.3s;
+}
+
+.marker:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+    background: #45a049;
+}
+
+.marker.active {
+    background: #ff4444;
+}
+
+.page-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px 20px;
+    border-radius: 20px;
+    z-index: 100;
+}
+
+.page-button {
+    background: none;
+    border: none;
+    color: white;
+    padding: 5px 15px;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: color 0.3s;
+}
+
+.page-button:hover {
+    color: #4CAF50;
+}
+
+.page-button.disabled {
+    color: #666;
+    cursor: not-allowed;
+}
+
+.page-indicator {
+    display: inline-block;
+    margin: 0 15px;
+    color: white;
+}
+
+/* Corner Logo */
+.corner-logo {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.corner-logo img {
+    width: 100px;
+    height: auto;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.corner-logo img:hover {
+    opacity: 1;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+/* Info Cards Overlay */
+.info-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.info-overlay:not(.hidden) {
+    opacity: 1;
+}
+
+.info-content {
+    position: relative;
+    width: 90%;
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.info-cards {
+    position: relative;
+    background: rgba(0, 0, 0, 0.95);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.05);
+    width: 100%;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease-out;
+}
+
+.info-cards.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.cards-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.cards-grid::-webkit-scrollbar-track {
+    background: rgba(0, 255, 0, 0.05);
+    border-radius: 3px;
+}
+
+.cards-grid::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 0, 0.2);
+    border-radius: 3px;
+}
+
+.info-card {
+    position: relative;
+    background: rgba(0, 255, 0, 0.03);
+    padding: 1.2rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: auto;
+    min-height: 160px;
+}
+
+.info-card:hover {
+    background: rgba(0, 255, 0, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 255, 0, 0.1);
+}
+
+.card-icon {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+}
+
+.info-card h2 {
+    color: #00ff00;
+    font-size: 1.1rem;
+    margin: 0 0 0.8rem 0;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.info-card p, .info-card li {
+    color: #fff;
+    margin: 0;
+    line-height: 1.4;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.feature-list, .values-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.feature-list li, .values-list li {
+    margin: 0.4rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #fff;
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.feature-icon, .value-icon {
+    font-size: 1rem;
+    opacity: 0.95;
+}
+
+.highlight-card {
+    grid-column: span 2;
+    min-height: 140px;
+}
+
+.card-accent {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #00ff00, transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.info-card:hover .card-accent {
+    opacity: 1;
+}
+
+/* Contact Card Specific Styles */
+.contact-card {
+    text-align: center;
+    grid-column: 1 / -1 !important;
+    max-width: 50%;
+    margin: 0 auto;
+}
+
+.contact-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.7rem 1.2rem;
+    background: rgba(0, 255, 0, 0.15);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    border-radius: 6px;
+    color: #00ff00;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.contact-button:hover {
+    background: rgba(0, 255, 0, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 255, 0, 0.15);
+}
+
+.close-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: rgba(0, 255, 0, 0.6);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.3rem;
+    line-height: 1;
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+
+.close-button:hover {
+    color: #00ff00;
+}
+
+/* Card Type Specific Styles */
+.intro-card { border-left: 3px solid #00ff77; }
+.mission-card { border-left: 3px solid #00ffaa; }
+.features-card { border-left: 3px solid #00ffdd; }
+.vision-card { border-left: 3px solid #00ddff; }
+.values-card { border-left: 3px solid #00aaff; }
+.contact-card { border-left: 3px solid #0077ff; }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .info-content {
+        width: 95%;
+        margin: 0.5rem;
+    }
+
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    
+    .highlight-card {
+        grid-column: span 1;
+    }
+    
+    .info-card {
+        min-height: auto;
+        padding: 1rem;
+    }
+
+    .info-card h2 {
+        font-size: 1rem;
+    }
+
+    .info-card p, .info-card li {
+        font-size: 0.85rem;
+    }
+
+    .contact-card {
+        max-width: 100%;
+    }
+}
+
+/* Contact Button */
+.nav-button[onclick*="mailto"] {
+    background: rgba(0, 255, 0, 0.15);
+    border-color: rgba(0, 255, 0, 0.4);
+    font-weight: 500;
+}
+
+.nav-button[onclick*="mailto"]:hover {
+    background: rgba(0, 255, 0, 0.25);
+    border-color: rgba(0, 255, 0, 0.6);
+}
+
+/* Partner Cards Specific Styles */
+.partner-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0;
+}
+
+.partner-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0.6rem 0;
+    color: #fff;
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.partner-icon {
+    font-size: 1.1rem;
+    opacity: 0.95;
+}
+
+.partner-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.7rem 1.2rem;
+    background: rgba(0, 255, 0, 0.15);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    border-radius: 6px;
+    color: #00ff00;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.partner-button::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 255, 0, 0.2) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.partner-button:hover::after {
+    opacity: 1;
+}
+
+.partner-button.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 255, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
+    }
+}
+
+/* Partner Card Type Specific Styles */
+.partner-why-card { border-left: 3px solid #00ff99; }
+.partner-how-card { border-left: 3px solid #00ffcc; }
+.partner-contact-card { 
+    border-left: 3px solid #00ffaa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.partner-contact-card .card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+}
+
+/* Medical Patient Cards Specific Styles */
+.medical-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0;
+}
+
+.medical-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0.6rem 0;
+    color: #fff;
+    font-size: 0.85rem;
+    opacity: 0.9;
+    line-height: 1.4;
+}
+
+.medical-icon {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    flex-shrink: 0;
+}
+
+.register-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.7rem 1.2rem;
+    background: rgba(0, 255, 0, 0.15);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    border-radius: 6px;
+    color: #00ff00;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.register-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 255, 0, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.register-button:hover::before {
+    left: 100%;
+}
+
+.register-button.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Medical Card Type Specific Styles */
+.medical-benefits-card { 
+    border-left: 3px solid #00ff77;
+    background: linear-gradient(145deg, rgba(0, 255, 0, 0.03), rgba(0, 255, 0, 0.05));
+}
+
+.medical-steps-card { 
+    border-left: 3px solid #00ffaa;
+    background: linear-gradient(145deg, rgba(0, 255, 0, 0.03), rgba(0, 255, 0, 0.05));
+}
+
+.medical-register-card { 
+    border-left: 3px solid #00ffdd;
+    background: linear-gradient(145deg, rgba(0, 255, 0, 0.03), rgba(0, 255, 0, 0.05));
+    text-align: center;
+}
+
+.medical-register-card .card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+}
+
+/* Driver Cards Specific Styles */
+.driver-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0;
+}
+
+.driver-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0.6rem 0;
+    color: #fff;
+    font-size: 0.85rem;
+    opacity: 0.9;
+    line-height: 1.4;
+}
+
+.driver-icon {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    flex-shrink: 0;
+}
+
+.driver-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.driver-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    background: rgba(0, 255, 0, 0.15);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    border-radius: 6px;
+    color: #00ff00;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.driver-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 255, 0, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.driver-button:hover::before {
+    left: 100%;
+}
+
+.driver-button.pulse {
+    animation: pulse 2s infinite;
+    background: rgba(0, 255, 0, 0.2);
+    border-color: rgba(0, 255, 0, 0.4);
+}
+
+/* Driver Card Type Specific Styles */
+.driver-opportunity-card { 
+    border-left: 3px solid #00ff99;
+    background: linear-gradient(145deg, rgba(0, 255, 0, 0.03), rgba(0, 255, 0, 0.05));
+}
+
+.driver-requirements-card { 
+    border-left: 3px solid #00ffbb;
+    background: linear-gradient(145deg, rgba(0, 255, 0, 0.03), rgba(0, 255, 0, 0.05));
+}
+
+.driver-register-card { 
+    border-left: 3px solid #00ffdd;
+    background: linear-gradient(145deg, rgba(0, 255, 0, 0.03), rgba(0, 255, 0, 0.05));
+    text-align: center;
+}
+
+.driver-register-card .card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+}
+
+/* Center single cards in the grid */
+.info-card:only-child,
+.info-card:last-child:nth-child(2n - 1) {
+    grid-column: 1 / -1;
+    max-width: 50%;
+    margin: 0 auto;
+}
+
+/* Ensure contact cards and register cards are centered */
+.contact-card:not(:nth-child(2n)),
+.medical-register-card:not(:nth-child(2n)),
+.partner-contact-card:not(:nth-child(2n)),
+.driver-register-card:not(:nth-child(2n)) {
+    grid-column: 1 / -1;
+    max-width: 50%;
+    margin: 0 auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .info-card:only-child,
+    .info-card:last-child:nth-child(2n - 1),
+    .contact-card:not(:nth-child(2n)),
+    .medical-register-card:not(:nth-child(2n)),
+    .partner-contact-card:not(:nth-child(2n)),
+    .driver-register-card:not(:nth-child(2n)) {
+        max-width: 100%;
+    }
+}
+
+/* Marker Styles */
+svg {
+    pointer-events: none;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 1000;
+}
+
+svg g[data-district-id] {
+    transition: transform 0.3s ease-out;
+    pointer-events: all;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+svg g[data-district-id] circle {
+    transition: all 0.3s ease;
+    vector-effect: non-scaling-stroke;
+}
+
+svg g[data-district-id]:hover circle:last-child {
+    r: 10;
+    fill: #45a049;
+    filter: brightness(1.2);
+}
+
+svg g[data-district-id].active circle:last-child {
+    fill: #ff4444;
+    r: 12;
+    filter: brightness(1.3);
+} 

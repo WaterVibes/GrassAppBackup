@@ -1,0 +1,29 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:prettier/recommended"
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "rules": {
+        "no-unused-vars": "warn",
+        "no-console": "off",
+        "prettier/prettier": "error",
+        "no-undef": "error",
+        "no-var": "error",
+        "prefer-const": "warn",
+        "eqeqeq": ["error", "always"],
+        "curly": ["error", "all"]
+    },
+    "globals": {
+        "THREE": "readonly",
+        "TWEEN": "readonly"
+    }
+} 

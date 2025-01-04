@@ -6,7 +6,12 @@ body {
     width: 100vw;
     height: 100vh;
     background: #000;
+<<<<<<< HEAD
     font-family: Arial, sans-serif;
+=======
+    font-family: 'Poppins', Arial, sans-serif;
+    color: #00ff00;
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 }
 
 canvas {
@@ -24,22 +29,35 @@ canvas {
 }
 
 /* Loading screen */
+<<<<<<< HEAD
 .loading-overlay {
+=======
+.loading-screen {
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+<<<<<<< HEAD
     background: rgba(0, 0, 0, 0.95);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
     transition: opacity 0.5s ease-in-out;
+=======
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 }
 
 .loading-content {
     text-align: center;
+<<<<<<< HEAD
     padding: 2rem;
     display: flex;
     flex-direction: column;
@@ -57,19 +75,39 @@ canvas {
     width: 100%;
     height: auto;
     animation: fadeIn 1s ease-in-out;
+=======
+    color: #00ff00;
+}
+
+.logo {
+    width: 200px;
+    height: auto;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.3));
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 }
 
 .loading-bar {
     width: 300px;
+<<<<<<< HEAD
     height: 4px;
     background: rgba(0, 255, 0, 0.2);
     border-radius: 2px;
     overflow: hidden;
+=======
+    height: 10px;
+    background: rgba(0, 255, 0, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 20px auto;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 }
 
 .loading-progress {
     width: 0%;
     height: 100%;
+<<<<<<< HEAD
     background: #00ff00;
     transition: width 0.3s ease-out;
     box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
@@ -88,11 +126,21 @@ canvas {
 
 /* Error overlay */
 .error-overlay {
+=======
+    background: linear-gradient(90deg, #00ff00, #4CAF50);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    transition: width 0.3s ease-in-out;
+}
+
+/* Error overlay */
+.error-screen {
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+<<<<<<< HEAD
     background: rgba(0, 0, 0, 0.9);
     display: flex;
     justify-content: center;
@@ -126,6 +174,55 @@ canvas {
 
 .error-content button:hover {
     background: #cc0000;
+=======
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.error-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 500px;
+}
+
+.error-content h2 {
+    color: #ff3333;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.error-details {
+    font-family: monospace;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    word-wrap: break-word;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 }
 
 /* Navigation Panel */
@@ -133,11 +230,16 @@ canvas {
     position: fixed;
     top: 20px;
     right: 20px;
+<<<<<<< HEAD
     background: rgba(0, 0, 0, 0.8);
+=======
+    background: rgba(0, 0, 0, 0.9);
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
     padding: 20px;
     border-radius: 10px;
     color: #00ff00;
     z-index: 100;
+<<<<<<< HEAD
     transition: transform 0.3s ease-in-out;
     border: 1px solid rgba(0, 255, 0, 0.3);
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
@@ -156,6 +258,18 @@ canvas {
     width: 20px;
     height: 100%;
     background: transparent;
+=======
+    max-width: 300px;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.nav-panel:hover {
+    box-shadow: 0 0 40px rgba(0, 255, 0, 0.3);
+    border-color: rgba(0, 255, 0, 0.5);
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 }
 
 .nav-section {
@@ -168,6 +282,10 @@ canvas {
     color: #00ff00;
     text-transform: uppercase;
     letter-spacing: 1px;
+<<<<<<< HEAD
+=======
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 }
 
 .button-container {
@@ -180,6 +298,7 @@ canvas {
     background: rgba(0, 255, 0, 0.1);
     color: #00ff00;
     border: 1px solid rgba(0, 255, 0, 0.3);
+<<<<<<< HEAD
     padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
@@ -187,11 +306,33 @@ canvas {
     font-size: 0.9em;
     text-align: left;
     width: 100%;
+=======
+    padding: 10px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.95em;
+    text-align: left;
+    width: 100%;
+    font-weight: 500;
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 }
 
 .nav-button:hover {
     background: rgba(0, 255, 0, 0.2);
     border-color: rgba(0, 255, 0, 0.5);
+<<<<<<< HEAD
+=======
+    transform: translateX(-5px);
+}
+
+.nav-button.active {
+    background: linear-gradient(90deg, #00ff00, #4CAF50);
+    border-color: rgba(0, 255, 0, 0.6);
+    color: #000;
+    font-weight: 600;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 }
 
 /* Corner Logo */
@@ -270,10 +411,17 @@ canvas {
 .cards-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+<<<<<<< HEAD
     gap: 1rem;
     max-height: 80vh;
     overflow-y: auto;
     padding-right: 0.5rem;
+=======
+    gap: 1.5rem;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 1rem;
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 }
 
 .cards-grid::-webkit-scrollbar {
@@ -293,6 +441,7 @@ canvas {
 .info-card {
     position: relative;
     background: rgba(0, 255, 0, 0.03);
+<<<<<<< HEAD
     padding: 1.2rem;
     border-radius: 8px;
     border: 1px solid rgba(0, 255, 0, 0.1);
@@ -302,12 +451,30 @@ canvas {
     justify-content: space-between;
     height: auto;
     min-height: 160px;
+=======
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: auto;
+    min-height: 160px;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.05);
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 }
 
 .info-card:hover {
     background: rgba(0, 255, 0, 0.05);
+<<<<<<< HEAD
     transform: translateY(-2px);
     box-shadow: 0 3px 10px rgba(0, 255, 0, 0.1);
+=======
+    border-color: rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+    transform: translateY(-2px);
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 }
 
 .card-icon {
@@ -441,7 +608,12 @@ canvas {
 
     .cards-grid {
         grid-template-columns: 1fr;
+<<<<<<< HEAD
         gap: 0.8rem;
+=======
+        gap: 1rem;
+        padding: 0.5rem;
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
     }
     
     .highlight-card {
@@ -754,19 +926,38 @@ canvas {
 }
 
 /* Center single cards in the grid */
+<<<<<<< HEAD
 .info-card:only-child,
+=======
+.info-card:only-child {
+    grid-column: 1 / -1;
+    max-width: 50%;
+    margin: 0 auto;
+}
+
+/* Also center the last card if it's alone in its row */
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
 .info-card:last-child:nth-child(2n - 1) {
     grid-column: 1 / -1;
     max-width: 50%;
     margin: 0 auto;
 }
 
+<<<<<<< HEAD
 /* Ensure contact cards and register cards are centered */
 .contact-card:not(:nth-child(2n)),
 .medical-register-card:not(:nth-child(2n)),
 .partner-contact-card:not(:nth-child(2n)),
 .driver-register-card:not(:nth-child(2n)) {
     grid-column: 1 / -1;
+=======
+/* Ensure contact cards and register cards are always centered */
+.contact-card,
+.medical-register-card,
+.partner-contact-card,
+.driver-register-card {
+    grid-column: 1 / -1 !important;
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
     max-width: 50%;
     margin: 0 auto;
 }
@@ -775,10 +966,17 @@ canvas {
 @media (max-width: 768px) {
     .info-card:only-child,
     .info-card:last-child:nth-child(2n - 1),
+<<<<<<< HEAD
     .contact-card:not(:nth-child(2n)),
     .medical-register-card:not(:nth-child(2n)),
     .partner-contact-card:not(:nth-child(2n)),
     .driver-register-card:not(:nth-child(2n)) {
+=======
+    .contact-card,
+    .medical-register-card,
+    .partner-contact-card,
+    .driver-register-card {
+>>>>>>> 1dc1a296984efffe979b61d62ce3eaa09d01c0e0
         max-width: 100%;
     }
 } 

@@ -1,0 +1,12 @@
+{
+  "name": "csp-test",
+  "version": "1.0.0",
+  "description": "Test script for CSP configuration and resource loading",
+  "main": "test-csp.js",
+  "scripts": {
+    "test": "node test-csp.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+} 

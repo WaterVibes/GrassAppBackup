@@ -1,0 +1,15 @@
+{
+    "development": {
+        "domains": [
+            "http://localhost:3000",
+            "http://localhost:8080"
+        ]
+    },
+    "production": {
+        "domains": []
+    },
+    "directives": {
+        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        "font-src": ["'self'", "https://fonts.gstatic.com"]
+    }
+} 
