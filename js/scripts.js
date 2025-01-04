@@ -770,30 +770,6 @@ function collapseNavPanel() {
     const navPanel = document.querySelector('.nav-panel');
     if (!navPanel) return;
 
-    // Add collapse button if it doesn't exist
-    if (!document.querySelector('.nav-collapse-btn')) {
-        const collapseBtn = document.createElement('button');
-        collapseBtn.className = 'nav-collapse-btn';
-        collapseBtn.innerHTML = '◀';
-        collapseBtn.style.cssText = `
-            position: absolute;
-            left: -30px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #00ff00;
-            color: #00ff00;
-            padding: ${isMobileDevice() ? '15px' : '10px'};
-            cursor: pointer;
-            border-radius: 5px 0 0 5px;
-            transition: all 0.3s ease;
-            z-index: 999;
-            opacity: 1;
-        `;
-        collapseBtn.onclick = toggleNavPanel;
-        navPanel.appendChild(collapseBtn);
-    }
-
     // Add CSS for panel animation with hover behavior
     const style = document.createElement('style');
     style.textContent = `
@@ -809,17 +785,10 @@ function collapseNavPanel() {
             padding: 20px;
             border-left: 1px solid #00ff00;
             box-shadow: -5px 0 15px rgba(0, 255, 0, 0.1);
-            width: 300px;
+            width: 250px;
         }
         .nav-panel.collapsed {
-            transform: translateX(calc(100% - 30px));
-        }
-        .nav-panel.collapsed:hover,
-        .nav-panel.collapsed.touch-hover {
-            transform: translateX(0);
-        }
-        .nav-panel.collapsed .nav-collapse-btn {
-            transform: translateY(-50%) rotate(180deg);
+            transform: translateX(100%);
         }
         .nav-section {
             margin-bottom: 20px;
@@ -849,20 +818,13 @@ function collapseNavPanel() {
         }
         @media (max-width: 768px) {
             .nav-panel {
-                width: 80%;
+                width: 70%;
             }
             .nav-panel.collapsed {
-                transform: translateX(calc(100% - 40px));
+                transform: translateX(100%);
             }
             .nav-panel.expanded {
                 transform: translateX(0);
-            }
-            .nav-collapse-btn {
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
             }
         }
     `;
