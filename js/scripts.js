@@ -1534,6 +1534,22 @@ function updateCameraMovement() {
         controls.target.y -= moveSpeed;
     }
 
+    // Rotate Left/Right (Q/R)
+    if (keysPressed['q']) {
+        const point = controls.target;
+        camera.position.sub(point);
+        camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), rotateSpeed);
+        camera.position.add(point);
+        camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), rotateSpeed);
+    }
+    if (keysPressed['r']) {
+        const point = controls.target;
+        camera.position.sub(point);
+        camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), -rotateSpeed);
+        camera.position.add(point);
+        camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), -rotateSpeed);
+    }
+
     // Tilt Up/Down (T/G)
     if (keysPressed['t']) {
         const offset = new THREE.Vector3();
@@ -1576,6 +1592,8 @@ A - Left
 D - Right
 E - Move Up
 C - Move Down
+Q - Rotate Left
+R - Rotate Right
 T - Tilt Up
 G - Tilt Down
 `;
