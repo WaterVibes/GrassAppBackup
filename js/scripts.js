@@ -19,13 +19,24 @@ const loadingProgress = document.querySelector('.loading-progress');
 const topLogo = document.querySelector('.top-logo');
 const navPanel = document.querySelector('.nav-panel');
 
-// Function to show UI elements after loading
-function showUIElements() {
-    setTimeout(() => {
-        topLogo.classList.add('visible');
-        navPanel.classList.add('visible');
-    }, 200); // Small delay to ensure it happens after loading screen starts fading
-}
+// Add initial hidden state for UI elements at the start of the file
+const style = document.createElement('style');
+style.textContent = `
+    .nav-panel, .top-left-logo {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    .nav-panel.visible, .top-left-logo.visible {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transition: opacity 0.5s ease !important;
+    }
+`;
+document.head.appendChild(style);
 
 // Initialize scene and camera
 scene = new THREE.Scene();
@@ -1110,7 +1121,23 @@ try {
             // Hide loading screen first
             if (loadingScreen) {
                 loadingScreen.classList.add('hidden');
-                showUIElements(); // Call our new function to show UI elements
+                
+                // Show UI elements after loading screen starts fading
+                setTimeout(() => {
+                    const navPanel = document.querySelector('.nav-panel');
+                    const topLogo = document.querySelector('.top-left-logo');
+                    
+                    if (navPanel) {
+                        requestAnimationFrame(() => {
+                            navPanel.classList.add('visible');
+                        });
+                    }
+                    if (topLogo) {
+                        requestAnimationFrame(() => {
+                            topLogo.classList.add('visible');
+                        });
+                    }
+                }, 1000); // Wait for loading screen fade out
             }
         },
         (progress) => {
