@@ -765,13 +765,10 @@ function removeExistingInfoCard() {
 // Add state tracking for first selection
 let hasFirstSelection = false;
 
-// Update collapseNavPanel function with correct class name
+// Update collapseNavPanel function with correct styling to match image
 function collapseNavPanel() {
-    const navPanel = document.querySelector('.nav-panel');  // Changed from nav-container
+    const navPanel = document.querySelector('.nav-panel');
     if (!navPanel) return;
-
-    // Start collapsed during loading
-    navPanel.classList.add('collapsed');
 
     // Add collapse button if it doesn't exist
     if (!document.querySelector('.nav-collapse-btn')) {
@@ -780,18 +777,18 @@ function collapseNavPanel() {
         collapseBtn.innerHTML = '◀';
         collapseBtn.style.cssText = `
             position: absolute;
-            right: -30px;
+            left: -30px;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0, 255, 0, 0.2);
-            border: 1px solid rgba(0, 255, 0, 0.3);
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
             color: #00ff00;
             padding: ${isMobileDevice() ? '15px' : '10px'};
             cursor: pointer;
-            border-radius: 0 5px 5px 0;
+            border-radius: 5px 0 0 5px;
             transition: all 0.3s ease;
             z-index: 999;
-            opacity: ${isMobileDevice() ? '0.8' : '1'};
+            opacity: 1;
         `;
         collapseBtn.onclick = toggleNavPanel;
         navPanel.appendChild(collapseBtn);
@@ -800,33 +797,62 @@ function collapseNavPanel() {
     // Add CSS for panel animation with hover behavior
     const style = document.createElement('style');
     style.textContent = `
-        .nav-panel {  /* Changed from nav-container */
+        .nav-panel {
             transition: transform 0.3s ease;
             position: fixed;
-            left: 0;
+            right: 0;
             top: 0;
             height: 100vh;
             z-index: 1000;
             background: rgba(0, 0, 0, 0.8);
+            transform: translateX(0);
+            padding: 20px;
+            border-left: 1px solid #00ff00;
+            box-shadow: -5px 0 15px rgba(0, 255, 0, 0.1);
         }
-        .nav-panel.collapsed {  /* Changed from nav-container */
-            transform: translateX(-100%) !important;
+        .nav-panel.collapsed {
+            transform: translateX(calc(100% - 30px));
         }
-        .nav-panel.collapsed:hover,  /* Changed from nav-container */
-        .nav-panel.collapsed.touch-hover {  /* Changed from nav-container */
-            transform: translateX(0) !important;
+        .nav-panel.collapsed:hover,
+        .nav-panel.collapsed.touch-hover {
+            transform: translateX(0);
         }
-        .nav-panel.collapsed .nav-collapse-btn {  /* Changed from nav-container */
-            right: -30px;
+        .nav-panel.collapsed .nav-collapse-btn {
             transform: translateY(-50%) rotate(180deg);
         }
+        .nav-section .nav-button,
+        .pages-container button {
+            background: transparent;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            width: 100%;
+            padding: 10px 20px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .nav-section .nav-button:hover,
+        .pages-container button:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+        .nav-section h2,
+        .pages-container h2 {
+            color: #00ff00;
+            text-align: center;
+            margin: 20px 0 10px;
+            font-size: 20px;
+        }
         @media (max-width: 768px) {
-            .nav-panel {  /* Changed from nav-container */
+            .nav-panel {
                 width: 80%;
-                transform: translateX(-100%);
             }
-            .nav-panel.expanded {  /* Changed from nav-container */
-                transform: translateX(0) !important;
+            .nav-panel.collapsed {
+                transform: translateX(calc(100% - 40px));
+            }
+            .nav-panel.expanded {
+                transform: translateX(0);
             }
             .nav-collapse-btn {
                 width: 40px;
@@ -860,7 +886,7 @@ function collapseNavPanel() {
 
 // Update toggleNavPanel function with correct class name
 function toggleNavPanel() {
-    const navPanel = document.querySelector('.nav-panel');  // Changed from nav-container
+    const navPanel = document.querySelector('.nav-panel');
     if (!navPanel) return;
     
     if (isMobileDevice()) {
@@ -882,9 +908,16 @@ document.addEventListener('DOMContentLoaded', () => {
     collapseNavPanel();
 
     // Handle district buttons
-    const districtButtons = document.querySelectorAll('.nav-section .nav-button');  // Updated selector
+    const districtButtons = document.querySelectorAll('.nav-section .nav-button');
     districtButtons.forEach(button => {
         button.addEventListener('click', () => {
+            // Force nav panel collapse immediately
+            const navPanel = document.querySelector('.nav-panel');
+            if (navPanel) {
+                navPanel.classList.add('collapsed');
+                navPanel.classList.remove('expanded');
+            }
+
             const buttonText = button.textContent.trim();
             const districtMap = {
                 'Baltimore Inner Harbor': 'innerHarbor',
@@ -897,18 +930,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (districtName) {
                 console.log('Moving to district:', districtName);
                 window.selectDistrict(districtName);
-                
-                // Force nav panel collapse
-                const navPanel = document.querySelector('.nav-panel');  // Changed from nav-container
-                if (navPanel) {
-                    if (isMobileDevice()) {
-                        navPanel.classList.remove('expanded');
-                        navPanel.classList.add('collapsed');
-                    } else {
-                        navPanel.classList.add('collapsed');
-                        navPanel.classList.remove('expanded');
-                    }
-                }
             }
         });
     });
@@ -917,6 +938,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageButtons = document.querySelectorAll('.pages-container button');
     pageButtons.forEach(button => {
         button.addEventListener('click', () => {
+            // Force nav panel collapse immediately
+            const navPanel = document.querySelector('.nav-panel');
+            if (navPanel) {
+                navPanel.classList.add('collapsed');
+                navPanel.classList.remove('expanded');
+            }
+
             const buttonText = button.textContent.trim();
             const pageMap = {
                 'About Us': 'aboutUs',
@@ -926,18 +954,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             const pageName = pageMap[buttonText] || buttonText;
             window.showPage(pageName);
-            
-            // Force nav panel collapse
-            const navPanel = document.querySelector('.nav-panel');
-            if (navPanel) {
-                if (isMobileDevice()) {
-                    navPanel.classList.remove('expanded');
-                    navPanel.classList.add('collapsed');
-                } else {
-                    navPanel.classList.add('collapsed');
-                    navPanel.classList.remove('expanded');
-                }
-            }
         });
     });
 });
