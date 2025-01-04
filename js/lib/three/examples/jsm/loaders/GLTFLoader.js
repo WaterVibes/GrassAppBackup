@@ -1,0 +1,1 @@
+export { GLTFLoader } from 'https://unpkg.com/three@0.157.0/examples/jsm/loaders/GLTFLoader.js'; 

@@ -1,0 +1,115 @@
+import * as THREE from './three/three.module.js';
+import { OrbitControls } from './three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from './three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from './three/examples/jsm/loaders/DRACOLoader.js';
+
+// Ensure TWEEN is loaded before using it
+let TWEEN;
+try {
+    TWEEN = window.TWEEN;
+    if (!TWEEN) {
+        throw new Error('TWEEN is not loaded. Please check that the script is included before app.js');
+    }
+} catch (error) {
+    console.error('Error loading TWEEN:', error);
+    // Try to load TWEEN from CDN
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/@tweenjs/tween.js@21.0.0/dist/tween.umd.js';
+    script.onload = () => {
+        TWEEN = window.TWEEN;
+        console.log('TWEEN loaded successfully');
+    };
+    script.onerror = (e) => {
+        console.error('Failed to load TWEEN:', e);
+        showErrorMessage('Failed to load required dependencies. Please refresh the page.');
+    };
+    document.head.appendChild(script);
+}
+
+const { Tween, Easing, update: tweenUpdate } = TWEEN || {};
+
+// Global variables
+let scene, camera, renderer, controls;
+let loadingDiv;
+let lastTime = 0;
+const frameInterval = 1000 / 60;
+
+// Initialize everything when the module loads
+async function initializeApp() {
+    try {
+        // Wait for DOM to be fully loaded
+        if (document.readyState !== 'complete') {
+            await new Promise(resolve => {
+                window.addEventListener('load', resolve);
+            });
+        }
+
+        // Get loading elements
+        loadingDiv = document.getElementById('loading');
+        
+        if (!loadingDiv) {
+            console.warn('Loading div not found');
+            return;
+        }
+
+        // Initialize THREE.js scene
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        
+        // Create renderer with appropriate settings
+        renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true,
+            powerPreference: 'high-performance'
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        document.body.appendChild(renderer.domElement);
+        
+        // Initialize controls
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.screenSpacePanning = false;
+        controls.maxPolarAngle = Math.PI / 2;
+        controls.minDistance = 50;
+        controls.maxDistance = 500;
+        
+        // Set up DRACO loader
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+        dracoLoader.setDecoderConfig({ type: 'js' });
+        
+        // Set up GLTF loader
+        const loader = new GLTFLoader();
+        loader.setDRACOLoader(dracoLoader);
+        
+        // Position camera
+        camera.position.set(0, 5, 10);
+        camera.lookAt(0, 0, 0);
+        
+        // Add some basic lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(0, 10, 0);
+        scene.add(directionalLight);
+        
+        // Start animation loop
+        animate();
+
+        console.log('Application initialized successfully');
+    } catch (error) {
+        console.error('Error during initialization:', error);
+        if (loadingDiv) {
+            showErrorMessage(error.message);
+        }
+    }
+}
+
+// Start initialization when module loads
+initializeApp();
+
+// ... rest of the file remains the same ... 

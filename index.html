@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Interactive 3D map of Baltimore City showcasing GrassApp's cannabis delivery service">
+    <meta name="theme-color" content="#000000">
+    
+    <title>Baltimore City Interactive Map</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗺️</text></svg>">
+    
+    <!-- Error Reporting -->
+    <script>
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e);
+            const errorFallback = document.getElementById('error-fallback');
+            if (errorFallback) {
+                const errorMessage = errorFallback.querySelector('.error-message');
+                const errorDetails = errorFallback.querySelector('.error-details');
+                if (errorMessage) errorMessage.textContent = 'An error occurred';
+                if (errorDetails) errorDetails.textContent = e.message;
+                errorFallback.classList.remove('hidden');
+            }
+        });
+
+        // Report CSP violations
+        window.addEventListener('securitypolicyviolation', function(e) {
+            console.error('CSP violation:', e);
+        });
+    </script>
+    
+    <!-- ES Module Shims: Import maps polyfill -->
+    <script async src="https://ga.jspm.io/npm:es-module-shims@1.8.0/dist/es-module-shims.js" crossorigin="anonymous"></script>
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.157.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.157.0/examples/jsm/",
+            "three/examples/jsm/controls/OrbitControls": "https://unpkg.com/three@0.157.0/examples/jsm/controls/OrbitControls.js",
+            "three/examples/jsm/loaders/GLTFLoader": "https://unpkg.com/three@0.157.0/examples/jsm/loaders/GLTFLoader.js",
+            "three/examples/jsm/loaders/DRACOLoader": "https://unpkg.com/three@0.157.0/examples/jsm/loaders/DRACOLoader.js",
+            "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@21.0.0/dist/tween.esm.js"
+        }
+    }
+    </script>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="css/styles.css" as="style">
+    <link rel="preload" href="js/scripts.js" as="script" crossorigin>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Prevent FOUC -->
+    <style>
+        body { opacity: 0; transition: opacity 0.5s; }
+        body.loaded { opacity: 1; }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <img src="/img/GrassAppLogo.png" alt="GrassApp Logo" />
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Fallback -->
+    <div id="error-fallback" class="error-overlay hidden">
+        <div class="error-content">
+            <h2>Error Loading Map</h2>
+            <p class="error-message"></p>
+            <pre class="error-details"></pre>
+            <button onclick="location.reload()">Retry</button>
+        </div>
+    </div>
+
+    <!-- Navigation Panel -->
+    <div class="nav-panel">
+        <div class="nav-section">
+            <h3>Districts</h3>
+            <div id="districtButtons" class="button-container"></div>
+        </div>
+        <div class="nav-section">
+            <h3>Pages</h3>
+            <div id="pageButtons" class="button-container"></div>
+        </div>
+    </div>
+
+    <!-- Info Cards Overlay -->
+    <div id="info-overlay" class="info-overlay hidden">
+        <div class="info-content">
+            <!-- About Us Cards -->
+            <div id="about-us-cards" class="info-cards hidden">
+                <div class="cards-grid">
+                    <div class="info-card intro-card">
+                        <div class="card-icon">🌿</div>
+                        <h2>GrassApp: Delivery for the Culture</h2>
+                        <p>Rooted in Baltimore, we connect communities with the cannabis they need in a way that's seamless, reliable, and culturally conscious.</p>
+                        <div class="card-accent"></div>
+                    </div>
+                    
+                    <div class="info-card mission-card">
+                        <div class="card-icon">🎯</div>
+                        <h2>Why We Exist</h2>
+                        <p>To elevate cannabis delivery to a higher standard, while empowering local dispensaries and providing patients with safe access to products.</p>
+                        <div class="card-accent"></div>
+                    </div>
+                    
+                    <div class="info-card highlight-card features-card">
+                        <div class="card-icon">⭐</div>
+                        <h2>What Makes Us Different</h2>
+                        <ul class="feature-list">
+                            <li><span class="feature-icon">🏢</span> Community-Driven Support</li>
+                            <li><span class="feature-icon">💳</span> Cashless & Automatic</li>
+                            <li><span class="feature-icon">🎨</span> Culturally Focused</li>
+                            <li><span class="feature-icon">🌱</span> Sustainability First</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+                    
+                    <div class="info-card vision-card">
+                        <div class="card-icon">🚀</div>
+                        <h2>Our Vision</h2>
+                        <p>Planning for tomorrow with expansion to other states. We're here to innovate, grow, and serve every community we touch.</p>
+                        <div class="card-accent"></div>
+                    </div>
+                    
+                    <div class="info-card values-card">
+                        <div class="card-icon">💫</div>
+                        <h2>Core Values</h2>
+                        <ul class="values-list">
+                            <li><span class="value-icon">👥</span> Inclusivity for All</li>
+                            <li><span class="value-icon">🔍</span> Complete Transparency</li>
+                            <li><span class="value-icon">💡</span> Constant Innovation</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+
+                    <div class="info-card contact-card">
+                        <div class="card-icon">📧</div>
+                        <h2>Get in Touch</h2>
+                        <p>Ready to join the movement? Have questions? We'd love to hear from you!</p>
+                        <a href="mailto:contact@thegrassapp.com" class="contact-button">
+                            <span class="button-icon">✉️</span>
+                            contact@thegrassapp.com
+                        </a>
+                        <div class="card-accent"></div>
+                    </div>
+                </div>
+                <button class="close-button">×</button>
+            </div>
+
+            <!-- Partner With Us Cards -->
+            <div id="partnership-cards" class="info-cards hidden">
+                <div class="cards-grid">
+                    <div class="info-card partner-why-card">
+                        <div class="card-icon">💪</div>
+                        <h2>Why Partner with GrassApp?</h2>
+                        <ul class="partner-list">
+                            <li><span class="partner-icon">📈</span> Boost your reach with real-time delivery services</li>
+                            <li><span class="partner-icon">🎯</span> Let us handle delivery so you can focus on your customers</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+                    
+                    <div class="info-card partner-how-card">
+                        <div class="card-icon">🚀</div>
+                        <h2>Joining is Easy</h2>
+                        <ul class="partner-list">
+                            <li><span class="partner-icon">🔄</span> Set up API integration for live inventory tracking</li>
+                            <li><span class="partner-icon">✨</span> Sit back while GrassApp handles the rest!</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+
+                    <div class="info-card partner-contact-card">
+                        <div class="card-icon">🤝</div>
+                        <h2>Ready to Partner?</h2>
+                        <p>Join the future of cannabis delivery in Baltimore!</p>
+                        <a href="mailto:contact@thegrassapp.com" class="partner-button pulse">
+                            <span class="button-icon">✉️</span>
+                            Contact Us Now
+                        </a>
+                        <div class="card-accent"></div>
+                    </div>
+                </div>
+                <button class="close-button">×</button>
+            </div>
+
+            <!-- Medical Patients Cards -->
+            <div id="medical-patient-cards" class="info-cards hidden">
+                <div class="cards-grid">
+                    <div class="info-card medical-benefits-card">
+                        <div class="card-icon">🌟</div>
+                        <h2>Why Use GrassApp?</h2>
+                        <ul class="medical-list">
+                            <li><span class="medical-icon">🏪</span> Easy access to licensed dispensaries</li>
+                            <li><span class="medical-icon">🚚</span> Same-day delivery for your medical needs</li>
+                            <li><span class="medical-icon">🔒</span> HIPAA-compliant, secure platform</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+                    
+                    <div class="info-card medical-steps-card">
+                        <div class="card-icon">📝</div>
+                        <h2>How to Begin</h2>
+                        <ul class="medical-list">
+                            <li><span class="medical-icon">✔️</span> Verify your age and medical status</li>
+                            <li><span class="medical-icon">🔍</span> Browse dispensaries and products</li>
+                            <li><span class="medical-icon">🛋️</span> Order and relax while GrassApp delivers</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+
+                    <div class="info-card medical-register-card">
+                        <div class="card-icon">📋</div>
+                        <h2>Register Now</h2>
+                        <p>Get started with your Maryland medical cannabis registration today!</p>
+                        <a href="https://onestop.md.gov/public_profiles/adult-patient-registration-601c0fd9f9d7557af267e1e1" 
+                           target="_blank" 
+                           class="register-button pulse">
+                            <span class="button-icon">📱</span>
+                            Register via OneStop
+                        </a>
+                        <div class="card-accent"></div>
+                    </div>
+                </div>
+                <button class="close-button">×</button>
+            </div>
+
+            <!-- Delivery Drivers Cards -->
+            <div id="delivery-drivers-cards" class="info-cards hidden">
+                <div class="cards-grid">
+                    <div class="info-card driver-opportunity-card">
+                        <div class="card-icon">🚗</div>
+                        <h2>Drive with Us</h2>
+                        <ul class="driver-list">
+                            <li><span class="driver-icon">⏰</span> Flexible hours to fit your lifestyle</li>
+                            <li><span class="driver-icon">🌱</span> Join Baltimore's cannabis delivery revolution</li>
+                            <li><span class="driver-icon">💰</span> Competitive earnings and tips</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+                    
+                    <div class="info-card driver-requirements-card">
+                        <div class="card-icon">📋</div>
+                        <h2>What You Need</h2>
+                        <ul class="driver-list">
+                            <li><span class="driver-icon">✔️</span> MMCC Caregiver certification</li>
+                            <li><span class="driver-icon">🚘</span> Reliable transportation</li>
+                            <li><span class="driver-icon">⭐</span> Commitment to excellent service</li>
+                        </ul>
+                        <div class="card-accent"></div>
+                    </div>
+
+                    <div class="info-card driver-register-card">
+                        <div class="card-icon">🔑</div>
+                        <h2>Get Started</h2>
+                        <p>Begin your journey as a GrassApp delivery partner!</p>
+                        <div class="driver-buttons">
+                            <a href="https://onestop.md.gov/public_profiles/601c0fd5f9d7557af267cee1" 
+                               target="_blank" 
+                               class="driver-button pulse">
+                                <span class="button-icon">📱</span>
+                                Register as Caregiver
+                            </a>
+                            <a href="mailto:contact@thegrassapp.com" 
+                               class="driver-button">
+                                <span class="button-icon">✉️</span>
+                                Contact Us
+                            </a>
+                        </div>
+                        <div class="card-accent"></div>
+                    </div>
+                </div>
+                <button class="close-button">×</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logo -->
+    <div id="corner-logo" class="corner-logo hidden">
+        <img src="/img/GrassAppLogo.png" alt="GrassApp Logo" width="100" height="100">
+    </div>
+
+    <!-- No-JS Fallback -->
+    <noscript>
+        <div class="error-overlay">
+            <div class="error-content">
+                <h2>JavaScript Required</h2>
+                <p>Please enable JavaScript to view the interactive map.</p>
+            </div>
+        </div>
+    </noscript>
+
+    <!-- Main Script -->
+    <script type="module" src="/js/scripts.js"></script>
+    
+    <!-- Remove FOUC -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('loaded');
+        });
+    </script>
+</body>
+</html> 
+</body>
+</html> 

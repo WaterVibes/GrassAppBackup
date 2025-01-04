@@ -1,0 +1,64 @@
+# Security Headers
+Header always set Content-Security-Policy "\
+    default-src 'self' blob:; \
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://unpkg.com https://ga.jspm.io https://cdnjs.cloudflare.com https://*.gstatic.com; \
+    script-src-elem 'self' 'unsafe-inline' blob: https://unpkg.com https://ga.jspm.io https://cdnjs.cloudflare.com https://*.gstatic.com; \
+    style-src 'self' 'unsafe-inline' https://unpkg.com; \
+    img-src 'self' data: blob: https://*.gstatic.com; \
+    font-src 'self' https://unpkg.com; \
+    connect-src 'self' blob: https://unpkg.com https://*.gstatic.com https://www.gstatic.com https://ga.jspm.io https://cdnjs.cloudflare.com; \
+    worker-src 'self' blob:; \
+    child-src blob: 'self'; \
+    frame-src 'self'; \
+    object-src 'none'; \
+    manifest-src 'self'"
+
+# Set X-Frame-Options header
+Header always set X-Frame-Options "SAMEORIGIN"
+
+# Set proper MIME types for JavaScript modules
+<FilesMatch "\\.js$">
+    Header set Content-Type "application/javascript"
+</FilesMatch>
+
+# Enable CORS
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+Header set Access-Control-Allow-Headers "*"
+Header set X-Content-Type-Options "nosniff"
+
+# Basic security headers
+Header set X-Content-Type-Options "nosniff"
+
+# Allow directory access
+Options +FollowSymLinks +MultiViews
+DirectoryIndex index.html
+
+# Enable rewrite engine
+RewriteEngine On
+RewriteBase /
+
+# If the request is not for a real file or directory
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.html [L]
+
+# Enable compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# Set MIME types
+AddType application/javascript .js
+AddType application/javascript .mjs
+AddType application/javascript .module.js
+AddType text/css .css
+AddType application/json .json
+AddType model/gltf-binary .glb
+AddType model/gltf+json .gltf
+AddType application/wasm .wasm 
