@@ -780,15 +780,17 @@ function collapseNavPanel() {
             top: 50%;
             transform: translateY(-50%);
             height: auto;
+            margin: 40px 0;
             z-index: 1000;
             background: rgba(0, 0, 0, 0.8);
-            padding: 15px;
+            padding: 20px;
             border-left: 1px solid #00ff00;
             box-shadow: -5px 0 15px rgba(0, 255, 0, 0.1);
             width: 200px;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            overflow: visible;
         }
         .nav-panel.collapsed {
             transform: translate(calc(100% - 50px), -50%);
@@ -797,7 +799,10 @@ function collapseNavPanel() {
             transform: translate(0, -50%);
         }
         .nav-section {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .nav-section:last-child {
+            margin-bottom: 0;
         }
         .nav-section h3 {
             color: #00ff00;
@@ -826,9 +831,8 @@ function collapseNavPanel() {
         @media (max-width: 768px) {
             .nav-panel {
                 width: 70%;
-                padding: 10px;
-                top: 50%;
-                transform: translateY(-50%);
+                padding: 15px;
+                margin: 30px 0;
             }
             .nav-panel.collapsed {
                 transform: translate(calc(100% - 60px), -50%);
@@ -887,9 +891,18 @@ function toggleNavPanel() {
 
 // Update button click handlers with correct class name
 document.addEventListener('DOMContentLoaded', () => {
+    const navPanel = document.querySelector('.nav-panel');
+    if (navPanel) {
+        const pagesSection = navPanel.querySelector('.nav-section:last-child');
+        const districtsSection = navPanel.querySelector('.nav-section:first-child');
+        if (pagesSection && districtsSection) {
+            navPanel.insertBefore(pagesSection, districtsSection);
+        }
+    }
+    
     // Initialize nav panel collapse functionality
     collapseNavPanel();
-
+    
     // Handle district buttons
     const districtButtons = document.querySelectorAll('.nav-section .nav-button');
     districtButtons.forEach(button => {
