@@ -1,0 +1,9 @@
+exclude:
+  - node_modules
+  - grassapp/node_modules
+  - "*/node_modules"
+  - package.json
+  - package-lock.json
+  - README.md
+  - CHANGELOG.md
+  - "*.config.js" 

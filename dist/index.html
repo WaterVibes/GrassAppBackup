@@ -3,54 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrassApp - Baltimore's Community-Focused Cannabis Delivery</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>GrassApp - Baltimore's Community Cannabis Delivery</title>
+    <link rel="icon" type="image/png" href="/assets/Logo-CVu4ADro.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script type="importmap">
     {
         "imports": {
             "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
-            "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/",
-            "three/examples/jsm/controls/OrbitControls.js": "https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js",
-            "three/examples/jsm/loaders/GLTFLoader.js": "https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js",
-            "three/examples/jsm/loaders/DRACOLoader.js": "https://unpkg.com/three@0.158.0/examples/jsm/loaders/DRACOLoader.js",
-            "three/examples/jsm/renderers/CSS2DRenderer.js": "https://unpkg.com/three@0.158.0/examples/jsm/renderers/CSS2DRenderer.js",
+            "three/examples/jsm/controls/OrbitControls": "https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js",
+            "three/examples/jsm/loaders/GLTFLoader": "https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js",
+            "three/examples/jsm/loaders/DRACOLoader": "https://unpkg.com/three@0.158.0/examples/jsm/loaders/DRACOLoader.js",
+            "three/examples/jsm/renderers/CSS2DRenderer": "https://unpkg.com/three@0.158.0/examples/jsm/renderers/CSS2DRenderer.js",
             "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@21.0.0/dist/tween.esm.js"
         }
     }
     </script>
-  <script type="module" crossorigin src="/GrassAppSitev2/assets/index-nMZNN5vf.js"></script>
-  <link rel="stylesheet" crossorigin href="/GrassAppSitev2/assets/index-BMK3c9na.css">
+  <script type="module" crossorigin src="/assets/index-B4f8Fpxt.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Bkn1U2UW.css">
 </head>
 <body>
-    <!-- Loading Screen -->
     <div class="loading-screen">
         <div class="loading-content">
-            <img src="/GrassAppSitev2/assets/GrassAppLogo-CVu4ADro.png" alt="GrassApp Logo" class="logo">
+            <img src="/assets/Logo-CVu4ADro.png" alt="GrassApp Logo" class="logo">
             <div class="loading-bar">
                 <div class="loading-progress"></div>
             </div>
         </div>
     </div>
 
-    <!-- Error Screen -->
-    <div class="error-screen hidden">
+    <div id="error-fallback" class="error-screen hidden">
         <div class="error-content">
-            <h2>Error</h2>
-            <div class="error-message"></div>
+            <h2>Oops! Something went wrong.</h2>
+            <p class="error-message"></p>
             <div class="error-details"></div>
             <button onclick="location.reload()">Reload Page</button>
         </div>
     </div>
 
-    <!-- Top Logo -->
     <div class="top-logo">
-        <img src="/GrassAppSitev2/assets/GrassAppLogo-CVu4ADro.png" alt="GrassApp Logo">
+        <img src="/assets/Logo-CVu4ADro.png" alt="GrassApp Logo">
     </div>
 
-    <!-- Navigation Panel -->
-    <div class="nav-panel">
-        <!-- Districts Section -->
+    <nav class="nav-panel">
+        <div class="nav-section">
+            <h3>PAGES</h3>
+            <div class="button-container">
+                <button class="nav-button" onclick="showPage('aboutUs')">About Us</button>
+                <button class="nav-button" onclick="showPage('medicalPatient')">Medical Patient</button>
+                <button class="nav-button" onclick="showPage('partnerWithUs')">Partner With Us</button>
+                <button class="nav-button" onclick="showPage('deliveryDriver')">Delivery Driver</button>
+            </div>
+        </div>
         <div class="nav-section">
             <h3>DISTRICTS</h3>
             <div class="button-container">
@@ -61,18 +65,7 @@
                 <button class="nav-button" onclick="selectDistrict('mountVernon')">Mount Vernon</button>
             </div>
         </div>
-
-        <!-- Pages Section -->
-        <div class="nav-section">
-            <h3>PAGES</h3>
-            <div class="button-container">
-                <button class="nav-button" onclick="showPage('aboutUs')">About Us</button>
-                <button class="nav-button" onclick="showPage('medicalPatient')">Medical Patient</button>
-                <button class="nav-button" onclick="showPage('partnerWithUs')">Partner With Us</button>
-                <button class="nav-button" onclick="showPage('deliveryDriver')">Delivery Driver</button>
-            </div>
-        </div>
-    </div>
+    </nav>
 
 </body>
 </html> 
